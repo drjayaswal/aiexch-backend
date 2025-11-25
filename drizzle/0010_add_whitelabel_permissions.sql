@@ -1,0 +1,1 @@
+ALTER TABLE "whitelabels" ADD COLUMN "permissions" text DEFAULT '{"casino":true,"sports":true,"liveCasino":true,"promotions":true,"transactions":true,"userManagement":false,"reports":false,"settings":false}';

@@ -1,0 +1,15 @@
+export const STATUS_CODES = {
+  200: "OK. Everything worked as expected.",
+  201: "A resource was successfully created in response to a POST request. The Location header contains the URL pointing to the newly created resource.",
+  204: "The request was handled successfully and the response contains no body content (like a DELETE request).",
+  304: "The resource was not modified. You can use the cached version.",
+  400: "Bad request. This could be caused by invalid JSON or invalid parameters.",
+  401: "Authentication failed.",
+  403: "The authenticated user is not allowed to access the specified API endpoint.",
+  404: "The requested resource does not exist.",
+  405: "Method not allowed. Check the Allow header for supporte46d methods.",
+  415: "Unsupported media type. The content type or version is invalid.",
+  422: "Data validation failed. Check response body for more details.",
+  429: "Too many requests. Rate limit exceeded.",
+  430: "Internal server error. Caused by internal application issues.",
+};

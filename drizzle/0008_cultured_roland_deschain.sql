@@ -1,0 +1,3 @@
+ALTER TABLE "transactions" ALTER COLUMN "currency" SET DEFAULT 'INR';--> statement-breakpoint
+ALTER TABLE "whitelabels" ALTER COLUMN "preferences" SET DEFAULT '{"language":"en","currency":"INR","timezone":"UTC","dateFormat":"MM/DD/YYYY","enableLiveChat":true,"enableNotifications":true,"maintenanceMode":false}';--> statement-breakpoint
+ALTER TABLE "qr_codes" ADD COLUMN "currency" varchar(10) DEFAULT 'INR';

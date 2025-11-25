@@ -1,0 +1,1 @@
+ALTER TABLE "casino_games" ALTER COLUMN "id" SET DATA TYPE varchar(30);

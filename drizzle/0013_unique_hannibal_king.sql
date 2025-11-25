@@ -1,0 +1,1 @@
+ALTER TABLE "whitelabels" ADD COLUMN "favicon" text;
