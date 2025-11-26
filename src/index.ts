@@ -25,7 +25,12 @@ const port = Number(process.env.PORT || 3001);
 const app = new Elysia()
   .use(
     cors({
-      origin: "http://localhost:3000",
+      origin: [
+        "http://localhost:3000",
+        "https://aiexch-two.vercel.app",
+        "https://aiexch.com",
+        "https://www.aiexch.com",
+      ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "x-whitelabel-domain"],
       credentials: true,

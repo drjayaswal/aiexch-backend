@@ -6,6 +6,7 @@ import { decodeToken, generateTokens } from "@services/token";
 import { getCurrentIP } from "@utils/user-ip";
 import { comparePassword, generateHashPassword } from "@utils/password";
 import { whitelabel_middleware } from "@middleware/whitelabel";
+import { cookieConfig } from "@config/cookie";
 import { DbType } from "../types";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
@@ -142,18 +143,12 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       // Save tokens in HttpOnly cookies
       cookie.accessToken.set({
         value: accessToken,
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 60 * 15, // 15 minutes
+        ...cookieConfig.accessToken,
       });
 
       cookie.refreshToken.set({
         value: refreshToken,
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        ...cookieConfig.refreshToken,
       });
 
       // Return user info only (tokens are in HTTP-only cookies)
@@ -315,18 +310,12 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       // Set new tokens in cookies
       cookie.refreshToken.set({
         value: newRefreshToken,
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        ...cookieConfig.refreshToken,
       });
 
       cookie.accessToken.set({
         value: accessToken,
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 60 * 15, // 15 minutes
+        ...cookieConfig.accessToken,
       });
 
       set.status = 200;

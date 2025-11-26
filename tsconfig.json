@@ -22,7 +22,8 @@
       "@middleware/*": ["src/middleware/*"],
       "@services/*": ["src/services/*"],
       "@types/*": ["src/types/*"],
-      "@db/*": ["src/db/*"]
+      "@db/*": ["src/db/*"],
+      "@config/*": ["src/config/*"]
     }
   },
   "include": ["src/**/*", "src/global.d.ts"],
