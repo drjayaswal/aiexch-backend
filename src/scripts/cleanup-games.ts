@@ -55,6 +55,7 @@ async function cleanup() {
     console.log("Starting cleanup...\n");
 
     console.log("1. Deleting casino_games table records...");
+    // return;
     const result = await db.delete(casino_games);
     console.log(`✓ Deleted all records from casino_games table\n`);
 

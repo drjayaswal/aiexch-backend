@@ -16,6 +16,9 @@ const s3Client = new S3Client({
 
 const BUCKET_NAME = process.env.AWS_S3_BUCKET!;
 
+const returnUrl = (key: string) =>
+  `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
+
 // ---- Single file upload ----
 export const uploadFile = async (
   file: File,
@@ -35,10 +38,10 @@ export const uploadFile = async (
   });
 
   await s3Client.send(command);
-  return `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
+  return returnUrl(key);
 };
 
-// ---- Generate presigned URL ----
+// Presigned URL
 export const getPresignedUrl = async (
   filename: string,
   contentType: string,
@@ -93,5 +96,5 @@ export const updateFile = async (file: File, key: string) => {
   });
 
   await s3Client.send(command);
-  return `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
+  return returnUrl(key);
 };

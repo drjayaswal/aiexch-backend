@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import axios from "axios";
 import path from "path";
+// import { CasinoService } from "../services/casino/aggregator";
 import { CasinoService } from "../services/casino/aggregator";
 import * as S3Service from "../services/s3";
 import { db } from "../db";
@@ -75,15 +76,31 @@ async function downloadImage(url: string): Promise<Buffer> {
   return Buffer.from(response.data);
 }
 
+// async function uploadToS3(buffer: Buffer, provider: string, filename: string) {
+//   const mimeType = getMimeType(filename);
+//   const safeProvider = sanitize(provider);
+//   const arrayBuffer = buffer.buffer.slice(
+//     buffer.byteOffset,
+//     buffer.byteOffset + buffer.byteLength
+//   );
+//   const file = new File([arrayBuffer], filename, { type: mimeType });
+//   return await S3Service.uploadFile(
+//     file,
+//     `casino-assets/games/${safeProvider}`,
+//     true
+//   );
+// }
+
 async function uploadToS3(buffer: Buffer, provider: string, filename: string) {
   const mimeType = getMimeType(filename);
   const safeProvider = sanitize(provider);
-  const arrayBuffer = buffer.buffer.slice(
-    buffer.byteOffset,
-    buffer.byteOffset + buffer.byteLength
-  );
-  const file = new File([arrayBuffer], filename, { type: mimeType });
-  return await S3Service.uploadFile(
+
+  // Force a concrete ArrayBuffer via copy
+  const uint8 = new Uint8Array(buffer);
+
+  const file = new File([uint8], filename, { type: mimeType });
+
+  return S3Service.uploadFile(
     file,
     `casino-assets/games/${safeProvider}`,
     true
