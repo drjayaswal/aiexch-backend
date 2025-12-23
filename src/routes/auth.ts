@@ -105,8 +105,12 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     async ({ body, headers, request, set, cookie, db }) => {
       const { email, password } = body;
 
-      console.log('--------------')
-      console.log(body)
+      console.log("--------------");
+      console.log("LOGIN ATTEMPT:", {
+        email,
+        timestamp: new Date().toISOString(),
+      });
+      console.log("BODY:", body);
 
       const [user] = await db
         .select()
@@ -114,17 +118,20 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         .where(eq(users.email, email));
 
       if (!user) {
+        console.log(`LOGIN FAILED: User not found for email: ${email}`);
         set.status = 404;
         return { success: false, message: "Account not found" };
       }
 
       const isCorrectPassword = await comparePassword(password, user.password);
       if (!isCorrectPassword) {
+        console.log(`LOGIN FAILED: Invalid password for email: ${email}`);
         set.status = 401;
         return { success: false, message: "Invalid credentials" };
       }
 
       if (user.status === "suspended") {
+        console.log(`LOGIN FAILED: Suspended account for email: ${email}`);
         set.status = 403;
         return { success: false, message: "Account suspended" };
       }
@@ -137,13 +144,29 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         .where(eq(users.id, user.id));
 
       // Generate tokens
+      const userRole = user.role || "user";
+      const isAdmin = userRole === "admin";
+
+      console.log(
+        `LOGIN SUCCESS: User ${user.username} (${email}) logged in successfully`
+      );
+      console.log(`USER ROLE: ${userRole} | IS ADMIN: ${isAdmin}`);
+      console.log(`LOGIN IP: ${clientIP} | USER ID: ${user.id}`);
+
       const { accessToken, refreshToken } = generateTokens(
         user.id,
         user.email,
-        user.role || "user"
+        userRole
       );
 
       // Save tokens in HttpOnly cookies
+      console.log(
+        `TOKENS GENERATED: Access token and refresh token created for user ${user.id}`
+      );
+      console.log(
+        `TOKEN LENGTH: Access=${accessToken.length}, Refresh=${refreshToken.length}`
+      );
+
       cookie.accessToken.set({
         value: accessToken,
         ...cookieConfig.accessToken,
@@ -154,8 +177,15 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         ...cookieConfig.refreshToken,
       });
 
+      console.log(
+        `COOKIES SET: Tokens stored in HTTP-only cookies for user ${user.id}`
+      );
+
       // Return user info only (tokens are in HTTP-only cookies)
       set.status = 200;
+      console.log(
+        `LOGIN RESPONSE: Returning user data for ${user.username} (ID: ${user.id})`
+      );
       return {
         success: true,
         user: {
@@ -163,6 +193,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
           username: user.username,
           email: user.email,
           membership: user.membership,
+          role: userRole,
         },
       };
     },
@@ -177,7 +208,6 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     "/send-otp",
     async ({ body, db, set }) => {
       const { email, type = "password_reset" } = body;
-
 
       // For password reset, check if user exists
       if (type === "password_reset") {
