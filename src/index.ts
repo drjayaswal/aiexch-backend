@@ -23,17 +23,47 @@ initializeServices();
 const port = Number(process.env.PORT || 3001);
 
 const app = new Elysia()
+  .onRequest(({ request, set }) => {
+    const url = request.url;
+    const method = request.method;
+    console.log(`GLOBAL REQUEST: ${method} ${url}`);
+
+    // Check if this is an admin route
+    if (url.includes("/admin")) {
+      console.log(`GLOBAL REQUEST: Admin route detected - ${method} ${url}`);
+      console.log(
+        `GLOBAL REQUEST: Headers:`,
+        Object.fromEntries(request.headers.entries())
+      );
+    }
+  })
   .use(
     cors({
-      origin: [
-        "http://localhost:3000",
-        "https://aiexch-two.vercel.app",
-        "https://aiexch.com",
-        "https://www.aiexch.com",
-      ],
+      origin: (request) => {
+        const origin = request.headers.get("origin");
+        console.log(`CORS: Origin check - ${origin}`);
+        const allowedOrigins = [
+          "http://localhost:3000",
+          "https://aiexch-two.vercel.app",
+          "https://aiexch.com",
+          "https://www.aiexch.com",
+        ];
+
+        if (!origin || allowedOrigins.includes(origin)) {
+          console.log(`CORS: Origin allowed - ${origin}`);
+          return true;
+        }
+
+        console.log(`CORS: Origin BLOCKED - ${origin}`);
+        return false;
+      },
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "x-whitelabel-domain"],
       credentials: true,
+      preFlight: (req: any) => {
+        console.log(`CORS: Pre-flight request - ${req.method} ${req.url}`);
+        return true;
+      },
     })
   )
   .use(cookie())
