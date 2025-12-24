@@ -31,12 +31,13 @@ export const CacheService = {
 
   async invalidatePattern(pattern: string): Promise<void> {
     try {
+      if (!redis.isOpen) return;
       const keys = await redis.keys(pattern);
       if (keys.length > 0) {
         await redis.del(keys);
       }
     } catch (error) {
-      console.error("Cache invalidate error:");
+      console.error("Cache invalidate error:", error);
     }
   },
 };

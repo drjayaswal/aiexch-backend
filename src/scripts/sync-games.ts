@@ -7,6 +7,7 @@ import * as S3Service from "../services/s3";
 import { db } from "../db";
 import { casino_games } from "../db/schema";
 import { CacheService } from "../services/cache";
+import { connectRedis } from "../db/redis";
 
 dotenv.config();
 
@@ -121,6 +122,7 @@ async function processGame(game: Game): Promise<string | null> {
     });
 
     if (existing && existing.image) {
+      console.log('skipping data already exist')
       return existing.image;
     }
 
@@ -198,6 +200,9 @@ async function processInBatches<T>(
 // ---------------------
 
 async function syncAllGames() {
+  // Connect to Redis before starting
+  await connectRedis();
+
   let totalProcessed = 0;
   let totalSuccess = 0;
   let totalFailed = 0;
@@ -206,7 +211,7 @@ async function syncAllGames() {
 
   try {
     // 1. Fetch first page
-    let page = 1;
+    let page = 300;
     let totalPages = 1;
 
     do {
@@ -221,6 +226,7 @@ async function syncAllGames() {
       });
 
       page++;
+      console.log('page no.',page)
     } while (page <= totalPages);
 
     // Invalidate all casino games caches after sync
