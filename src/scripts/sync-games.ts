@@ -221,29 +221,51 @@ async function syncAllGames() {
     let totalPages = 1;
 
     do {
-      const data = await fetchGames(page);
+      try {
+        const data = await fetchGames(page);
 
-      // Validate response structure
-      if (!data || !data.items || !Array.isArray(data.items)) {
-        console.error(`Invalid response for page ${page}:`, data);
-        console.error("Stopping sync due to invalid API response");
-        break;
+        // Validate response structure
+        if (!data || !data.items || !Array.isArray(data.items)) {
+          console.error(`Invalid response for page ${page}:`, data);
+          console.error("Skipping page due to invalid API response");
+          page++;
+          continue;
+        }
+
+        totalPages = data._meta?.pageCount || totalPages;
+        const games = data.items;
+
+        console.log(`Processing ${games.length} games from page ${page}`);
+
+        await processInBatches(games, BATCH_SIZE, async (game) => {
+          totalProcessed++;
+          const s3Url = await processGame(game);
+          if (s3Url) totalSuccess++;
+          else totalFailed++;
+        });
+
+        page++;
+        console.log("page no.", page);
+
+        // Check if we've reached the last page based on actual data
+        if (games.length === 0) {
+          console.log("No more games found, ending sync");
+          break;
+        }
+      } catch (error) {
+        console.error(`Error processing page ${page}:`, error);
+        console.log("Continuing to next page...");
+        page++;
+
+        // Stop after 3 consecutive errors to avoid infinite loop
+        if (page > 305) {
+          console.log(
+            "Stopping sync after reaching page 305 to avoid infinite loop"
+          );
+          break;
+        }
+        continue;
       }
-
-      totalPages = data._meta?.pageCount || totalPages;
-      const games = data.items;
-
-      console.log(`Processing ${games.length} games from page ${page}`);
-
-      await processInBatches(games, BATCH_SIZE, async (game) => {
-        totalProcessed++;
-        const s3Url = await processGame(game);
-        if (s3Url) totalSuccess++;
-        else totalFailed++;
-      });
-
-      page++;
-      console.log("page no.", page);
     } while (page <= totalPages);
 
     // Invalidate all casino games caches after sync
