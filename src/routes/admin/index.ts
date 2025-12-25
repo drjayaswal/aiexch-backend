@@ -19,16 +19,12 @@ import { app_middleware } from "../../middleware/auth";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
   .state({ id: 0, role: "" })
-  .get("/test", () => {
-    console.log("=== ADMIN TEST ENDPOINT CALLED ===");
-    return { message: "Admin test endpoint works!" };
-  })
   .guard({
     beforeHandle({ cookie, set, store }) {
       console.log("=== ADMIN GUARD DEBUG ===");
       console.log("Guard cookie:", cookie ? "exists" : "missing");
       console.log("About to call app_middleware with allowed: ['admin']");
-      
+
       const state_result = app_middleware({
         cookie,
         allowed: ["admin"],
@@ -43,19 +39,23 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
       store.role = state_result.data.role;
     },
   })
-      .use(promotionsRoutes)
-      .use(promocodesRoutes)
-      .use(bannersRoutes)
-      .use(popupsRoutes)
-      .use(whitelabelsRoutes)
-      .use(transactionsRoutes)
-      .use(kycRoutes)
-      .use(usersRoutes)
-      .use(settingsRoutes)
-      .use(notificationsRoutes)
-      .use(qrCodesRoutes)
-      .use(sportsGamesRoutes)
-      .use(homeSectionsRoutes)
-      .use(withdrawalMethodsRoutes)
-      .use(domainsRoutes)
-      .use(casinoGamesAdminRoutes);
+  .get("/test", () => {
+    console.log("=== ADMIN TEST ENDPOINT CALLED ===");
+    return { message: "Admin test endpoint works!" };
+  })
+  .use(promotionsRoutes)
+  .use(promocodesRoutes)
+  .use(bannersRoutes)
+  .use(popupsRoutes)
+  .use(whitelabelsRoutes)
+  .use(transactionsRoutes)
+  .use(kycRoutes)
+  .use(usersRoutes)
+  .use(settingsRoutes)
+  .use(notificationsRoutes)
+  .use(qrCodesRoutes)
+  .use(sportsGamesRoutes)
+  .use(homeSectionsRoutes)
+  .use(withdrawalMethodsRoutes)
+  .use(domainsRoutes)
+  .use(casinoGamesAdminRoutes);
