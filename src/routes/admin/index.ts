@@ -22,4 +22,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
   })
   .get("/", () => {
     return { message: "Admin root endpoint works!" };
+  })
+  .get("/dashboard", () => {
+    return { message: "Admin dashboard works!" };
   });
