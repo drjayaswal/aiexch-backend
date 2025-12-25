@@ -72,15 +72,15 @@ const app = new Elysia()
       timestamp: new Date().toISOString(),
     };
   })
-  .all("/admin/*", ({ request, set }) => {
-    console.log("=== ADMIN REQUEST CAUGHT BY WILDCARD ===");
+  .all("/*", ({ request, set }) => {
+    console.log("=== CATCH-ALL WILDCARD ===");
     console.log("Method:", request.method);
     console.log("URL:", request.url);
     console.log("Path:", new URL(request.url).pathname);
 
     set.status = 404;
     return {
-      message: "Admin routes not found - caught by wildcard",
+      message: "Route not found - caught by wildcard",
       method: request.method,
       url: request.url,
       path: new URL(request.url).pathname,
