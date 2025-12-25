@@ -143,6 +143,14 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         user.role || "user"
       );
 
+      console.log("Login - User role:", user.role);
+      console.log("Login - Generated access token payload:", {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+      console.log("Login - Cookie config:", cookieConfig);
+
       // Save tokens in HttpOnly cookies
       cookie.accessToken.set({
         value: accessToken,
@@ -153,6 +161,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         value: refreshToken,
         ...cookieConfig.refreshToken,
       });
+
+      console.log("Login - Cookies set successfully");
 
       // Return user info only (tokens are in HTTP-only cookies)
       set.status = 200;
