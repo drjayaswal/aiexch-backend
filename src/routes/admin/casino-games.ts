@@ -5,7 +5,7 @@ import { whitelabel_middleware } from "@middleware/whitelabel";
 import { DbType } from "../../types";
 
 export const casinoGamesAdminRoutes = new Elysia({
-  prefix: "/admin/casino-games",
+  prefix: "/casino-games",
 })
   .resolve(async ({ request }): Promise<{ db: DbType; whitelabel: any }> => {
     const { db, whitelabel } = await whitelabel_middleware(request);
