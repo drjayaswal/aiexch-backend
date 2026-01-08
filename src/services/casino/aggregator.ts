@@ -2,8 +2,8 @@ import crypto from "crypto";
 import { api } from "./api";
 import { CacheService } from "@services/cache";
 
-const MERCHANT_ID = process.env.CASINO_MARCHANT_ID!;
-const MERCHANT_KEY = process.env.CASINO_MARCHANT_KEY!;
+const MERCHANT_ID = process.env.CASINO_MERCHANT_ID!;
+const MERCHANT_KEY = process.env.CASINO_MERCHANT_KEY!;
 
 function generateHeaders(params: Record<string, any>) {
   const timestamp = Math.floor(Date.now() / 1000).toString();

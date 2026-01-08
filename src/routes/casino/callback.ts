@@ -4,7 +4,7 @@ import { transactions } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { CasinoCallbackService } from "@services/casino/casino-callback";
 import type { CallbackHeaders } from "@services/casino/casino-callback";
-import { DbType } from "../../types";
+import { CALLBACK_ACTION, DbType } from "../../types";
 
 export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
   .resolve(async ({ request }): Promise<{ db: DbType; whitelabel: any }> => {
@@ -13,10 +13,13 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
   })
   .post(
     "/",
-    async ({ body, headers, db, set }) => {
+    async ({ body, headers, db, set, whitelabel }) => {
       const startTime = Date.now();
       set.status = 200;
 
+      console.log("-------- CALLBACK ------------------------");
+      console.log("body :", body);
+      console.log("--------------------------------");
       try {
         const {
           action,
@@ -27,6 +30,8 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
           rollback_transactions,
         } = body;
 
+        console.log("-------- checkpoint 1 ------------------------");
+
         const requiredHeaderKeys: Array<keyof CallbackHeaders> = [
           "x-merchant-id",
           "x-timestamp",
@@ -35,6 +40,7 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
         ];
 
         const missingHeader = requiredHeaderKeys.find((key) => !headers[key]);
+        console.log("-------- checkpoint 2 ------------------------");
 
         if (missingHeader) {
           return {
@@ -42,6 +48,7 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
             error: `Missing signature header: ${missingHeader}`,
           };
         }
+        console.log("-------- checkpoint 3 ------------------------");
 
         const signatureHeaders: CallbackHeaders = {
           "x-merchant-id": headers["x-merchant-id"] as string,
@@ -50,25 +57,46 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
           "x-sign": headers["x-sign"] as string,
         };
 
+        console.log("-------- checkpoint 4 ------------------------");
+
         const signatureValid = CasinoCallbackService.verifySignature(
           signatureHeaders,
           body
         );
+        console.log("-------- checkpoint 5 ------------------------");
+
         if (!signatureValid) {
           return { success: false, error: "Invalid signature" };
         }
+        console.log("-------- checkpoint 6 ------------------------");
 
-        if (currency !== "INR") {
-          set.status = 400;
-          return { success: false, error: "Invalid currency" };
+        // Get currency from whitelabel preferences, default to INR
+        let expectedCurrency = "INR";
+        if (whitelabel?.preferences) {
+          try {
+            const preferences = JSON.parse(whitelabel.preferences);
+            expectedCurrency = preferences.currency || "INR";
+          } catch (err) {
+            console.error("Failed to parse whitelabel preferences:", err);
+            expectedCurrency = "INR";
+          }
         }
+        console.log("-------- checkpoint 7 ------------------------");
+
+        if (currency !== expectedCurrency) {
+          set.status = 400;
+          return {
+            success: false,
+            error: `Invalid currency. Expected ${expectedCurrency}, got ${currency}`,
+          };
+        }
+        console.log("-------- checkpoint 8 ------------------------");
 
         const playerId = Number(player_id);
         if (isNaN(playerId)) {
           set.status = 400;
           return { success: false, error: "Invalid player_id" };
         }
-
         console.log("--------------------------------");
         console.log(action);
         console.log("--------------------------------");
@@ -251,65 +279,65 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
             return { success: true, balance: newBalance, transaction_id };
           }
 
-          case "rollback": {
-            if (!rollback_transactions || rollback_transactions.length === 0) {
-              set.status = 400;
-              return { success: false, error: "Missing rollback_transactions" };
-            }
+          // case "rollback": {
+          //   if (!rollback_transactions || rollback_transactions.length === 0) {
+          //     set.status = 400;
+          //     return { success: false, error: "Missing rollback_transactions" };
+          //   }
 
-            const balanceBefore = await CasinoCallbackService.getBalance(
-              db,
-              playerId
-            );
-            if (balanceBefore === null) {
-              set.status = 404;
-              return { success: false, error: "Player not found" };
-            }
+          //   const balanceBefore = await CasinoCallbackService.getBalance(
+          //     db,
+          //     playerId
+          //   );
+          //   if (balanceBefore === null) {
+          //     set.status = 404;
+          //     return { success: false, error: "Player not found" };
+          //   }
 
-            let rolledBackCount = 0;
-            let skippedCount = 0;
-            let totalRefunded = 0;
-            let totalDeducted = 0;
+          //   let rolledBackCount = 0;
+          //   let skippedCount = 0;
+          //   let totalRefunded = 0;
+          //   let totalDeducted = 0;
 
-            for (const txnId of rollback_transactions) {
-              const txn = await CasinoCallbackService.getTransaction(db, txnId);
-              if (txn) {
-                if (txn.type === "bet") {
-                  const refundAmount = Number(txn.amount);
-                  await CasinoCallbackService.addBalance(
-                    db,
-                    playerId,
-                    txn.amount
-                  );
-                  totalRefunded += refundAmount;
-                } else if (txn.type === "win") {
-                  const deductAmount = Number(txn.amount);
-                  await CasinoCallbackService.deductBalance(
-                    db,
-                    playerId,
-                    txn.amount
-                  );
-                  totalDeducted += deductAmount;
-                }
+          //   for (const txnId of rollback_transactions) {
+          //     const txn = await CasinoCallbackService.getTransaction(db, txnId);
+          //     if (txn) {
+          //       if (txn.type === "bet") {
+          //         const refundAmount = Number(txn.amount);
+          //         await CasinoCallbackService.addBalance(
+          //           db,
+          //           playerId,
+          //           txn.amount
+          //         );
+          //         totalRefunded += refundAmount;
+          //       } else if (txn.type === "win") {
+          //         const deductAmount = Number(txn.amount);
+          //         await CasinoCallbackService.deductBalance(
+          //           db,
+          //           playerId,
+          //           txn.amount
+          //         );
+          //         totalDeducted += deductAmount;
+          //       }
 
-                await db
-                  .update(transactions)
-                  .set({ status: "rolled_back" })
-                  .where(eq(transactions.reference, txnId));
+          //       await db
+          //         .update(transactions)
+          //         .set({ status: "rolled_back" })
+          //         .where(eq(transactions.reference, txnId));
 
-                rolledBackCount++;
-              } else {
-                skippedCount++;
-              }
-            }
+          //       rolledBackCount++;
+          //     } else {
+          //       skippedCount++;
+          //     }
+          //   }
 
-            const balanceAfter = await CasinoCallbackService.getBalance(
-              db,
-              playerId
-            );
+          //   const balanceAfter = await CasinoCallbackService.getBalance(
+          //     db,
+          //     playerId
+          //   );
 
-            return { success: true, balance: balanceAfter };
-          }
+          //   return { success: true, balance: balanceAfter };
+          // }
 
           default:
             set.status = 400;
@@ -327,13 +355,7 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
     },
     {
       body: t.Object({
-        action: t.Union([
-          t.Literal("balance"),
-          t.Literal("bet"),
-          t.Literal("win"),
-          t.Literal("refund"),
-          t.Literal("rollback"),
-        ]),
+        action: t.Enum(Object.fromEntries(CALLBACK_ACTION.map((x) => [x, x]))),
         player_id: t.String(),
         currency: t.String(),
         session_id: t.Optional(t.String()),
