@@ -69,12 +69,22 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
           return { success: false, error: "Invalid player_id" };
         }
 
+        console.log("--------------------------------");
+        console.log(action);
+        console.log("--------------------------------");
+
         switch (action) {
           case "balance": {
+            console.log("--------------------------------");
+            console.log("balance");
+            console.log("--------------------------------");
             const balance = await CasinoCallbackService.getBalance(
               db,
               playerId
             );
+            console.log("--------------------------------");
+            console.log(balance);
+            console.log("--------------------------------");
             if (balance === null) {
               set.status = 404;
               return { success: false, error: "Player not found" };
