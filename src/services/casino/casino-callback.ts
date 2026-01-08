@@ -178,7 +178,8 @@ export const CasinoCallbackService = {
     txnId: string,
     type: string,
     amount: string,
-    status: string
+    status: string,
+    currency: string = "INR"
   ) {
     await db.insert(transactions).values({
       userId: playerId,
@@ -186,7 +187,7 @@ export const CasinoCallbackService = {
       amount,
       status,
       reference: txnId,
-      currency: "INR",
+      currency: currency || "INR",
     });
   },
 

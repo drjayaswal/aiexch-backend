@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { CasinoCallbackService } from "@services/casino/casino-callback";
 import type { CallbackHeaders } from "@services/casino/casino-callback";
 import { CALLBACK_ACTION, DbType } from "../../types";
+import { convertINRToEUR, convertEURToINR } from "@utils/currency";
 
 export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
   .resolve(async ({ request }): Promise<{ db: DbType; whitelabel: any }> => {
@@ -70,27 +71,18 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
         }
         console.log("-------- checkpoint 6 ------------------------");
 
-        // Get currency from whitelabel preferences, default to INR
-        let expectedCurrency = "INR";
-        if (whitelabel?.preferences) {
-          try {
-            const preferences = JSON.parse(whitelabel.preferences);
-            expectedCurrency = preferences.currency || "INR";
-          } catch (err) {
-            console.error("Failed to parse whitelabel preferences:", err);
-            expectedCurrency = "INR";
-          }
-        }
-        console.log("-------- checkpoint 7 ------------------------");
-
-        if (currency !== expectedCurrency) {
+        // Accept both INR and EUR currencies
+        const supportedCurrencies = ["INR", "EUR"];
+        if (!supportedCurrencies.includes(currency)) {
           set.status = 400;
           return {
             success: false,
-            error: `Invalid currency. Expected ${expectedCurrency}, got ${currency}`,
+            error: `Invalid currency. Supported currencies: ${supportedCurrencies.join(
+              ", "
+            )}`,
           };
         }
-        console.log("-------- checkpoint 8 ------------------------");
+        console.log("-------- checkpoint 7 ------------------------");
 
         const playerId = Number(player_id);
         if (isNaN(playerId)) {
@@ -117,8 +109,15 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               set.status = 404;
               return { success: false, error: "Player not found" };
             }
+
+            // Convert balance from INR to EUR if currency is EUR
+            let convertedBalance = balance;
+            if (currency === "EUR") {
+              convertedBalance = convertINRToEUR(balance);
+            }
+
             set.status = 200;
-            return { success: true, balance };
+            return { success: true, balance: convertedBalance };
           }
 
           case "bet": {
@@ -139,7 +138,16 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
                 db,
                 playerId
               );
-              return { success: true, balance, transaction_id };
+              // Convert balance if currency is EUR
+              let convertedBalance = balance;
+              if (currency === "EUR" && balance !== null) {
+                convertedBalance = convertINRToEUR(balance);
+              }
+              return {
+                success: true,
+                balance: convertedBalance,
+                transaction_id,
+              };
             }
 
             const balance = await CasinoCallbackService.getBalance(
@@ -151,22 +159,30 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               return { success: false, error: "Player not found" };
             }
 
+            // Convert EUR amount to INR for database operations
+            const amountInINR =
+              currency === "EUR" ? convertEURToINR(amount) : amount;
             const currentBalance = Number(balance);
-            const betAmount = Number(amount);
+            const betAmount = Number(amountInINR);
 
             if (currentBalance < betAmount) {
               set.status = 400;
               return { success: false, error: "Insufficient balance" };
             }
 
-            await CasinoCallbackService.deductBalance(db, playerId, amount);
+            await CasinoCallbackService.deductBalance(
+              db,
+              playerId,
+              amountInINR
+            );
             await CasinoCallbackService.saveTransaction(
               db,
               playerId,
               transaction_id,
               "bet",
-              amount,
-              "completed"
+              amountInINR,
+              "completed",
+              currency
             );
 
             const newBalance = await CasinoCallbackService.getBalance(
@@ -174,7 +190,13 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               playerId
             );
 
-            return { success: true, balance: newBalance, transaction_id };
+            // Convert balance back to EUR if currency is EUR
+            let convertedBalance = newBalance;
+            if (currency === "EUR" && newBalance !== null) {
+              convertedBalance = convertINRToEUR(newBalance);
+            }
+
+            return { success: true, balance: convertedBalance, transaction_id };
           }
 
           case "win": {
@@ -195,7 +217,16 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
                 db,
                 playerId
               );
-              return { success: true, balance, transaction_id };
+              // Convert balance if currency is EUR
+              let convertedBalance = balance;
+              if (currency === "EUR" && balance !== null) {
+                convertedBalance = convertINRToEUR(balance);
+              }
+              return {
+                success: true,
+                balance: convertedBalance,
+                transaction_id,
+              };
             }
 
             const balanceBefore = await CasinoCallbackService.getBalance(
@@ -207,17 +238,19 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               return { success: false, error: "Player not found" };
             }
 
-            const winAmount = Number(amount);
-            const currentBalance = Number(balanceBefore);
+            // Convert EUR amount to INR for database operations
+            const amountInINR =
+              currency === "EUR" ? convertEURToINR(amount) : amount;
 
-            await CasinoCallbackService.addBalance(db, playerId, amount);
+            await CasinoCallbackService.addBalance(db, playerId, amountInINR);
             await CasinoCallbackService.saveTransaction(
               db,
               playerId,
               transaction_id,
               "win",
-              amount,
-              "completed"
+              amountInINR,
+              "completed",
+              currency
             );
 
             const newBalance = await CasinoCallbackService.getBalance(
@@ -225,7 +258,13 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               playerId
             );
 
-            return { success: true, balance: newBalance, transaction_id };
+            // Convert balance back to EUR if currency is EUR
+            let convertedBalance = newBalance;
+            if (currency === "EUR" && newBalance !== null) {
+              convertedBalance = convertINRToEUR(newBalance);
+            }
+
+            return { success: true, balance: convertedBalance, transaction_id };
           }
 
           case "refund": {
@@ -246,7 +285,16 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
                 db,
                 playerId
               );
-              return { success: true, balance, transaction_id };
+              // Convert balance if currency is EUR
+              let convertedBalance = balance;
+              if (currency === "EUR" && balance !== null) {
+                convertedBalance = convertINRToEUR(balance);
+              }
+              return {
+                success: true,
+                balance: convertedBalance,
+                transaction_id,
+              };
             }
 
             const balanceBefore = await CasinoCallbackService.getBalance(
@@ -258,17 +306,19 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               return { success: false, error: "Player not found" };
             }
 
-            const refundAmount = Number(amount);
-            const currentBalance = Number(balanceBefore);
+            // Convert EUR amount to INR for database operations
+            const amountInINR =
+              currency === "EUR" ? convertEURToINR(amount) : amount;
 
-            await CasinoCallbackService.addBalance(db, playerId, amount);
+            await CasinoCallbackService.addBalance(db, playerId, amountInINR);
             await CasinoCallbackService.saveTransaction(
               db,
               playerId,
               transaction_id,
               "refund",
-              amount,
-              "completed"
+              amountInINR,
+              "completed",
+              currency
             );
 
             const newBalance = await CasinoCallbackService.getBalance(
@@ -276,7 +326,13 @@ export const casinoCallbackRoutes = new Elysia({ prefix: "/casino/callback" })
               playerId
             );
 
-            return { success: true, balance: newBalance, transaction_id };
+            // Convert balance back to EUR if currency is EUR
+            let convertedBalance = newBalance;
+            if (currency === "EUR" && newBalance !== null) {
+              convertedBalance = convertINRToEUR(newBalance);
+            }
+
+            return { success: true, balance: convertedBalance, transaction_id };
           }
 
           // case "rollback": {
