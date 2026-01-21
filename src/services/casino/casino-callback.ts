@@ -16,11 +16,16 @@ type CallbackBody = {
   player_id: string;
   currency: string;
   session_id?: string;
-  amount?: string;
+  amount?: string | number;
   transaction_id?: string;
   game_uuid?: string;
   round_id?: string;
   rollback_transactions?: string[];
+  type?: string;
+  freespin_id?: string;
+  quantity?: number | string;
+  bet_transaction_id?: string;
+  finished?: boolean;
 };
 
 const MERCHANT_KEY = process.env.CASINO_MERCHANT_KEY;
@@ -32,7 +37,12 @@ if (!MERCHANT_KEY) {
 // PHP's http_build_query equivalent
 // PHP uses rawurlencode() which is similar to encodeURIComponent but with some differences
 // For most alphanumeric characters, they're the same
-function phpHttpBuildQuery(params: Record<string, string | string[]>): string {
+function phpHttpBuildQuery(
+  params: Record<
+    string,
+    string | number | boolean | Array<string | number | boolean>
+  >
+): string {
   const sortedKeys = Object.keys(params).sort();
   const parts: string[] = [];
 
@@ -53,10 +63,7 @@ function phpHttpBuildQuery(params: Record<string, string | string[]>): string {
         parts.push(`${encodedKey}[${index}]=${encodedValue}`);
       });
     } else {
-      const encodedValue = encodeURIComponent(String(value)).replace(
-        /%20/g,
-        "+"
-      );
+      const encodedValue = encodeURIComponent(String(value)).replace(/%20/g, "+");
       parts.push(`${encodedKey}=${encodedValue}`);
     }
   });
@@ -65,7 +72,10 @@ function phpHttpBuildQuery(params: Record<string, string | string[]>): string {
 }
 
 export const CasinoCallbackService = {
-  verifySignature(headers: CallbackHeaders, body: CallbackBody): boolean {
+  verifySignature(
+    headers: CallbackHeaders,
+    body: Record<string, unknown> | CallbackBody
+  ): boolean {
     const {
       "x-merchant-id": merchantId,
       "x-timestamp": timestamp,
@@ -73,15 +83,18 @@ export const CasinoCallbackService = {
       "x-sign": receivedSign,
     } = headers;
 
-    console.log("-------- checkpoint 4.1 ------------------------");
-    console.log("Body received:", JSON.stringify(body, null, 2));
-    console.log(
-      "Headers:",
-      JSON.stringify({ merchantId, timestamp, nonce, receivedSign }, null, 2)
-    );
+    // console.log("-------- checkpoint 4.1 ------------------------");
+    // console.log("Body received:", JSON.stringify(body, null, 2));
+    // console.log(
+    //   "Headers:",
+    //   JSON.stringify({ merchantId, timestamp, nonce, receivedSign }, null, 2)
+    // );
 
     // Filter out undefined/null values from body (matching PHP $_POST behavior)
-    const filteredBody: Record<string, string | string[]> = {};
+    const filteredBody: Record<
+      string,
+      string | number | boolean | Array<string | number | boolean>
+    > = {};
     Object.keys(body).forEach((key) => {
       const value = body[key as keyof CallbackBody];
       // Only include defined, non-null values
@@ -102,22 +115,22 @@ export const CasinoCallbackService = {
 
     // Build query string using PHP-compatible function
     const queryString = phpHttpBuildQuery(merged);
-    console.log("-------- checkpoint 4.2 ------------------------");
-    console.log("Query string for signature:", queryString);
+    // console.log("-------- checkpoint 4.2 ------------------------");
+    // console.log("Query string for signature:", queryString);
 
     const calculatedSign = crypto
       .createHmac("sha1", MERCHANT_KEY)
       .update(queryString)
       .digest("hex");
-    console.log("-------- checkpoint 4.3 ------------------------");
-    console.log("calculatedSign :", calculatedSign);
-    console.log("receivedSign :", receivedSign);
-    console.log("MERCHANT_KEY length:", MERCHANT_KEY.length);
-    console.log(
-      "MERCHANT_KEY (first 10 chars):",
-      MERCHANT_KEY.substring(0, 10)
-    );
-    console.log("--------------------------------");
+    // console.log("-------- checkpoint 4.3 ------------------------");
+    // console.log("calculatedSign :", calculatedSign);
+    // console.log("receivedSign :", receivedSign);
+    // console.log("MERCHANT_KEY length:", MERCHANT_KEY.length);
+    // console.log(
+    //   "MERCHANT_KEY (first 10 chars):",
+    //   MERCHANT_KEY.substring(0, 10)
+    // );
+    // console.log("--------------------------------");
     return calculatedSign === receivedSign;
   },
 
@@ -179,7 +192,8 @@ export const CasinoCallbackService = {
     type: string,
     amount: string,
     status: string,
-    currency: string = "INR"
+    currency: string = "INR",
+    extra?: { method?: string; txnHash?: string }
   ) {
     await db.insert(transactions).values({
       userId: playerId,
@@ -188,6 +202,8 @@ export const CasinoCallbackService = {
       status,
       reference: txnId,
       currency: currency || "INR",
+      ...(extra?.method ? { method: extra.method } : {}),
+      ...(extra?.txnHash ? { txnHash: extra.txnHash } : {}),
     });
   },
 
@@ -198,5 +214,21 @@ export const CasinoCallbackService = {
       .where(eq(transactions.reference, txnId))
       .limit(1);
     return txn;
+  },
+
+  async getTransactionByTxnHash(db: DbType, txnHash: string) {
+    const [txn] = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.txnHash, txnHash))
+      .limit(1);
+    return txn;
+  },
+
+  async updateTransactionStatus(db: DbType, txnId: string, status: string) {
+    await db
+      .update(transactions)
+      .set({ status })
+      .where(eq(transactions.reference, txnId));
   },
 };

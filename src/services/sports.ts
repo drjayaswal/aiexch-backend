@@ -68,7 +68,7 @@ export const SportsService = {
       );
       return results.flat();
     } catch (error) {
-      console.error("getOdds error:");
+      // console.error("getOdds error:");
       return [];
     }
   },
@@ -142,9 +142,8 @@ export const SportsService = {
     gtype?: string;
   }) {
     try {
-      const url = `/getSessions?EventTypeID=${eventTypeId}&matchId=${matchId}${
-        gtype ? `&gtype=${gtype}` : ""
-      }`;
+      const url = `/getSessions?EventTypeID=${eventTypeId}&matchId=${matchId}${gtype ? `&gtype=${gtype}` : ""
+        }`;
 
       const response = await api.get(url);
       const rawData = validateArray(response.data);

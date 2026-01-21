@@ -11,5 +11,4 @@ const client = postgres(connectionString, {
   connect_timeout: 10,
 });
 
-console.log("connection string", connectionString);
 export const db = drizzle(client, { schema });

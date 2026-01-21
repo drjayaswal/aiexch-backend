@@ -38,13 +38,6 @@ try {
     adminPayload.email,
     adminPayload.role
   );
-  console.log("Access token generated:", !!accessToken);
-  console.log("Refresh token generated:", !!refreshToken);
-
-  // Test token verification
-  const decoded = jwt.verify(accessToken, JWT_SECRET);
-  console.log("Token verification successful:", decoded);
-  console.log("User role from token:", decoded.role);
 
   // Test the authenticate_jwt function logic
   const authenticate_jwt = (access_token) => {
@@ -66,12 +59,10 @@ try {
   };
 
   const authResult = authenticate_jwt(accessToken);
-  console.log("Auth middleware result:", authResult);
 
   // Test role check
   const allowed = ["admin"];
   const roleCheck = allowed.includes(authResult.data?.role);
-  console.log("Role check (admin allowed):", roleCheck);
 } catch (error) {
   console.error("Error during token test:", error);
 }

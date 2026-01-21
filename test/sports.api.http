@@ -1,0 +1,8 @@
+### 
+
+GET http://168.138.183.95/api/v2/getMarketsOdds?EventTypeID=4&marketId=1.227886179 HTTP/1.1 ✘ HTTP/1.1
+
+
+### 
+
+GET http://168.138.183.95/api/v2/getSport HTTP/1.1

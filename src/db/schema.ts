@@ -393,9 +393,7 @@ export const bets = pgTable("bets", {
   userId: bigint("user_id", { mode: "number" })
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  eventTypeId: varchar("event_type_id", { length: 50 })
-    .default("4") // Default to cricket (4) for existing rows
-    .notNull(), // Required for fetching results
+  eventTypeId: varchar("event_type_id", { length: 50 }).notNull(), // Required for fetching results
   matchId: varchar("match_id", { length: 100 }).notNull(),
   marketId: varchar("market_id", { length: 100 }).notNull(),
   selectionId: varchar("selection_id", { length: 100 }).notNull(),

@@ -5,14 +5,16 @@ export const cookieConfig = {
     httpOnly: true,
     secure: true,
     sameSite: "none" as const,
-    domain: isProduction ? ".aiexch.com" : undefined,
+    // Don't set domain for cross-origin cookies - let browser handle it
+    domain: undefined,
     maxAge: 60 * 15, // 15 minutes
   },
   refreshToken: {
     httpOnly: true,
     secure: true,
     sameSite: "none" as const,
-    domain: isProduction ? ".aiexch.com" : undefined,
+    // Don't set domain for cross-origin cookies - let browser handle it
+    domain: undefined,
     maxAge: 60 * 60 * 24 * 7, // 7 days
   },
 };

@@ -6,13 +6,13 @@ type Subscription = {
   marketIds?: string[];
   matchId?: string;
   type:
-    | "odds"
-    | "bookmakers"
-    | "sessions"
-    | "score"
-    | "premium"
-    | "matchDetails"
-    | "series";
+  | "odds"
+  | "bookmakers"
+  | "sessions"
+  | "score"
+  | "premium"
+  | "matchDetails"
+  | "series";
 };
 
 type WebSocketClient = {
@@ -28,9 +28,8 @@ class SportsWebSocketManager {
 
   private getSubscriptionKey(sub: Subscription): string {
     if (sub.type === "odds" || sub.type === "bookmakers") {
-      return `${sub.type}:${sub.eventTypeId}:${
-        sub.marketIds?.sort().join(",") || ""
-      }`;
+      return `${sub.type}:${sub.eventTypeId}:${sub.marketIds?.sort().join(",") || ""
+        }`;
     }
     if (
       sub.type === "sessions" ||
@@ -100,7 +99,7 @@ class SportsWebSocketManager {
     // Start polling if not already started
     if (!this.intervals.has(subKey)) {
       // Start polling (don't await, but handle errors)
-      this.startPolling(subKey, subscription).catch((error) => {});
+      this.startPolling(subKey, subscription).catch((error) => { });
     } else {
       // If polling already exists, immediately send cached data to new subscriber
       // Use setImmediate to ensure client is fully registered before fetching
@@ -108,7 +107,7 @@ class SportsWebSocketManager {
         this.fetchAndBroadcast(subKey, subscription).catch((error) => {
           console.error(
             `[WebSocket Manager] Failed to fetch cached data for ${subKey}:`,
-            
+
           );
         });
       });
@@ -156,10 +155,10 @@ class SportsWebSocketManager {
       subscription.type === "odds"
         ? 1000 // 1 seconds for odds (real-time)
         : subscription.type === "series"
-        ? 1000 // 1 second for series (real-time odds updates)
-        : subscription.type === "matchDetails"
-        ? 5 * 60 * 1000 // Check every 5 minutes for cache expiration (markets cached for 4.5 hours)
-        : 1000; // 1 second for other types
+          ? 1000 // 1 second for series (real-time odds updates)
+          : subscription.type === "matchDetails"
+            ? 5 * 60 * 1000 // Check every 5 minutes for cache expiration (markets cached for 4.5 hours)
+            : 1000; // 1 second for other types
 
     const interval = setInterval(async () => {
       await this.fetchAndBroadcast(subKey, subscription);
@@ -357,7 +356,7 @@ class SportsWebSocketManager {
               } catch (error) {
                 console.error(
                   `[WebSocket Manager] ❌ Error sending to client ${clientId}:`,
-                  
+
                 );
                 errorCount++;
                 deadClients.push(clientId);
@@ -381,14 +380,14 @@ class SportsWebSocketManager {
           );
         }
       } else {
-        console.warn(
-          `[WebSocket Manager] ⚠️ No data fetched for ${subKey} (data is null or undefined)`
-        );
+        // console.warn(
+        //   `[WebSocket Manager] ⚠️ No data fetched for ${subKey} (data is null or undefined)`
+        // );
       }
     } catch (error) {
       console.error(
         `[WebSocket Manager] Error fetching data for ${subKey}:`,
-        
+
       );
     }
   }

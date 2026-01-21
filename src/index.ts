@@ -12,27 +12,36 @@ import { bettingRoutes } from "./routes/betting";
 import { casinoAggregatorRoutes } from "./routes/casino/aggregator";
 import { casinoCallbackRoutes } from "./routes/casino/callback";
 import { casinoGamesRoutes } from "./routes/casino/games";
+import { startBetSettlementService } from "./services/bet-settlement";
 import "dotenv/config";
 
 // // Initialize services
 async function initializeServices() {
   await connectRedis();
+  // Start automatic bet settlement service
+  startBetSettlementService();
 }
 initializeServices();
 
 const port = Number(process.env.PORT || 3001);
 
+// Temporarily allow all origins for development
+// Set ALLOW_ALL_ORIGINS=true in .env to enable this (works in production too)
+const allowAllOrigins = process.env.ALLOW_ALL_ORIGINS === "true" || process.env.NODE_ENV !== "production";
+
 const app = new Elysia()
   .use(
     cors({
-      origin: [
-        "http://localhost:3000",
-        "https://aiexch-two.vercel.app",
-        "https://aiexch.com",
-        "https://www.aiexch.com",
-      ],
+      origin: allowAllOrigins
+        ? true // Allow all origins - useful for local dev connecting to prod
+        : [
+          "http://localhost:3000",
+          "https://aiexch-two.vercel.app",
+          "https://aiexch.com",
+          "https://www.aiexch.com",
+        ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "x-whitelabel-domain"],
+      // allowedHeaders: ["Content-Type", "Authorization", "x-whitelabel-domain"],
       credentials: true,
     })
   )
@@ -73,10 +82,10 @@ const app = new Elysia()
     };
   })
   .all("/*", ({ request, set }) => {
-    console.log("=== CATCH-ALL WILDCARD ===");
-    console.log("Method:", request.method);
-    console.log("URL:", request.url);
-    console.log("Path:", new URL(request.url).pathname);
+    // console.log("=== CATCH-ALL WILDCARD ===");
+    // console.log("Method:", request.method);
+    // console.log("URL:", request.url);
+    // console.log("Path:", new URL(request.url).pathname);
 
     set.status = 404;
     return {

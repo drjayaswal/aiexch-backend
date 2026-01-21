@@ -89,14 +89,11 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     {
       body: t.Object({
         username: t.String({ minLength: 3, maxLength: 50 }),
-        email: t.String({ format: "email" }),
-        password: t.String({
-          minLength: 8,
-          maxLength: 100,
-        }),
+        email: t.String(),
+        password: t.String(),
         otp: t.String({ minLength: 6, maxLength: 6 }),
-        phone: t.Optional(t.String({ minLength: 10, maxLength: 20 })),
-        country: t.Optional(t.String({ minLength: 2, maxLength: 100 })),
+        phone: t.Optional(t.String()),
+        country: t.Optional(t.String({ minLength: 2, maxLength: 50 })),
       }),
     }
   )
@@ -104,9 +101,6 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     "/login",
     async ({ body, headers, request, set, cookie, db }) => {
       const { email, password } = body;
-
-      console.log("--------------");
-      console.log(body);
 
       const [user] = await db
         .select()
@@ -143,13 +137,13 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         user.role || "user"
       );
 
-      console.log("Login - User role:", user.role);
-      console.log("Login - Generated access token payload:", {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      });
-      console.log("Login - Cookie config:", cookieConfig);
+      // console.log("Login - User role:", user.role);
+      // console.log("Login - Generated access token payload:", {
+      //   id: user.id,
+      //   email: user.email,
+      //   role: user.role,
+      // });
+      // console.log("Login - Cookie config:", cookieConfig);
 
       // Save tokens in HttpOnly cookies
       cookie.accessToken.set({
@@ -162,7 +156,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         ...cookieConfig.refreshToken,
       });
 
-      console.log("Login - Cookies set successfully");
+      // console.log("Login - Cookies set successfully");
 
       // Return user info only (tokens are in HTTP-only cookies)
       set.status = 200;
@@ -213,6 +207,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       }
 
       const otp = generateOTP();
+      console.log("otp -> ", otp)
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       await db.insert(otps).values({
