@@ -255,13 +255,15 @@ class SportsWebSocketManager {
           case "series":
             // Check if series structure (without odds) is cached
             const seriesStructureKey = `series:structure:${subscription.eventTypeId}`;
-            let seriesStructure = await CacheService.get(seriesStructureKey);
+            // let seriesStructure = await CacheService.get(seriesStructureKey);
+            let seriesStructure = null;
 
             if (!seriesStructure) {
               // Fetch series structure (series + matches, without odds) and cache it
               const seriesList = await SportsService.getSeriesList({
                 eventTypeId: subscription.eventTypeId,
               });
+              console.log("ss",seriesList)
 
               seriesStructure = await Promise.all(
                 seriesList.map(async (series: any) => {

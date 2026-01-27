@@ -1,8 +1,7 @@
 //  Sports List
 export interface Sports {
-  eventType: string;
+  id: string;
   name: string;
-  marketCount: number;
 }
 
 // Series Or Competition List

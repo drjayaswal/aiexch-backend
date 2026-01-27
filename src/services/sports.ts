@@ -11,6 +11,8 @@ import {
 } from "../types/sports/lists";
 import { MatchResult } from "../types/sports/results";
 import { CacheService } from "./cache";
+import dummysports from "../dummy/sportsevents.json"
+import seriesData from "../dummy/series.json";
 
 const api = axios.create({
   baseURL: process.env.SPORTS_GAME_PROVIDER_BASE_URL || "http://100.30.62.142",
@@ -24,8 +26,9 @@ function validateArray<T>(data: unknown, defaultValue: T[] = []): T[] {
 export const SportsService = {
   async getSports() {
     try {
-      const response = await api.get("/getSport");
-      const data = validateArray<Sports>(response.data);
+    
+      const response = dummysports as Sports[];
+      const data = validateArray<Sports>(response);
       return data;
     } catch (error: any) {
       console.error("getSports error:");
@@ -324,10 +327,9 @@ export const SportsService = {
     try {
       const cached = await CacheService.get<CompetitionItem[]>(cacheKey);
       if (cached) return cached;
-
-      const url = `/fetch_data?Action=listCompetitions&EventTypeID=${eventTypeId}`;
-      const response = await api.get(url);
-      const data = validateArray<CompetitionItem>(response.data);
+      
+      const data = validateArray<any>(seriesData);
+      console.log("data",data)
 
       await CacheService.set(cacheKey, data, 3 * 60 * 60); // 3 hours
       return data;
@@ -507,6 +509,8 @@ export const SportsService = {
   async getSeriesListWithMatches({ eventTypeId }: { eventTypeId: string }) {
     try {
       const seriesList = await this.getSeriesList({ eventTypeId });
+    console.log("list",seriesList)
+
 
       const seriesWithMatches = await Promise.all(
         seriesList.map(async (series) => {

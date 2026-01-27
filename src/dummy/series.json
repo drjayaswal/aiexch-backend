@@ -1,0 +1,1247 @@
+[
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "101480",
+      "name": "Indian Premier League",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "101480",
+        "name": "Indian Premier League",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "12573376",
+      "name": "ACC Mens Premier Cup",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "12573376",
+        "name": "ACC Mens Premier Cup",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "12596293",
+      "name": "Major League Cricket",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "12596293",
+        "name": "Major League Cricket",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "12598889",
+      "name": "ICC Men's T20 WC Europe Qualifier",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "12598889",
+        "name": "ICC Men's T20 WC Europe Qualifier",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "12599165",
+      "name": "Zim Afro T10",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "12599165",
+        "name": "Zim Afro T10",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4109",
+      "name": "Virtual Cricket T10",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": [
+      {
+        "id": 4400219,
+        "name": "Mumbai Indians T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400220,
+        "name": "Chennai Super Kings T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400221,
+        "name": "Delhi Capitals T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400222,
+        "name": "Punjab Kings T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400223,
+        "name": "Kolkata Knight Riders T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400224,
+        "name": "Rajasthan Royals T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400225,
+        "name": "Royal Challengers Bangalore T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400226,
+        "name": "Sunrisers Hyderabad T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400227,
+        "name": "Birmingham Bears T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400228,
+        "name": "Derbyshire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400229,
+        "name": "Durham T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400230,
+        "name": "Lancashire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400231,
+        "name": "Leicestershire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400232,
+        "name": "Northamptonshire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400233,
+        "name": "Nottinghamshire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400234,
+        "name": "Worcestershire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400235,
+        "name": "Yorkshire T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400236,
+        "name": "Essex T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4400237,
+        "name": "Glamorgan T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4109",
+        "name": "Virtual Cricket T10",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4400191,\"name\":\"India T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4400192,\"name\":\"Australia T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4400193,\"name\":\"Pakistan T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4400194,\"name\":\"New Zealand T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4400195,\"name\":\"West Indies T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4400196,\"name\":\"South Africa T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400197,\"name\":\"England T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400198,\"name\":\"Bangladesh T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400199,\"name\":\"Sri Lanka T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400200,\"name\":\"Afghanistan T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400201,\"name\":\"Scotland T10 ( Virtual ) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4400202,\"name\":\"Zimbabwe T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4141",
+      "name": "Indian Premier League Virtual Cricket T10",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4432500,\"name\":\"Mumbai Indians T10 (Virtual) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4432501,\"name\":\"Chennai Super Kings T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432502,\"name\":\"Delhi Capitals T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432503,\"name\":\"Punjab Kings T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432504,\"name\":\"Kolkata Knight Riders T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432505,\"name\":\"Rajasthan Royals T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432506,\"name\":\"Royal Challengers Bangalore T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432507,\"name\":\"Sunrisers Hyderabad T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432508,\"name\":\"Gujarat Titans T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432509,\"name\":\"Lucknow Super Giants T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4432500,
+        "name": "Mumbai Indians T10 (Virtual) ",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432501,
+        "name": "Chennai Super Kings T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432502,
+        "name": "Delhi Capitals T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432503,
+        "name": "Punjab Kings T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432504,
+        "name": "Kolkata Knight Riders T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432505,
+        "name": "Rajasthan Royals T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432506,
+        "name": "Royal Challengers Bangalore T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432507,
+        "name": "Sunrisers Hyderabad T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432508,
+        "name": "Gujarat Titans T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432509,
+        "name": "Lucknow Super Giants T10 ( Virtual )",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4141",
+        "name": "Indian Premier League Virtual Cricket T10",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4432500,\"name\":\"Mumbai Indians T10 (Virtual) \",\"sortPriority\":0,\"metadata\":null},{\"id\":4432501,\"name\":\"Chennai Super Kings T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432502,\"name\":\"Delhi Capitals T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432503,\"name\":\"Punjab Kings T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432504,\"name\":\"Kolkata Knight Riders T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432505,\"name\":\"Rajasthan Royals T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432506,\"name\":\"Royal Challengers Bangalore T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432507,\"name\":\"Sunrisers Hyderabad T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432508,\"name\":\"Gujarat Titans T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432509,\"name\":\"Lucknow Super Giants T10 ( Virtual )\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4142",
+      "name": "International Virtual Cricket T10",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4432590,\"name\":\"India T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432591,\"name\":\"England  T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432592,\"name\":\"Pakistan T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432593,\"name\":\"New Zealand T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432594,\"name\":\"South Africa T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432595,\"name\":\"Australia T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432596,\"name\":\"West indies T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432597,\"name\":\"Afghanistan T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432598,\"name\":\"Bangladesh T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432599,\"name\":\"Sri Lanka T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432600,\"name\":\"Zimbabwe T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432601,\"name\":\"UAE T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432602,\"name\":\"Scotland T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432603,\"name\":\"Ireland T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432604,\"name\":\"Netherlands T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432605,\"name\":\"Oman T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432606,\"name\":\"Namibia T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432607,\"name\":\"Nepal T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432608,\"name\":\"United states T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432609,\"name\":\"Papua New Guinea T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4432590,
+        "name": "India T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432591,
+        "name": "England  T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432592,
+        "name": "Pakistan T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432593,
+        "name": "New Zealand T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432594,
+        "name": "South Africa T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432595,
+        "name": "Australia T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432596,
+        "name": "West indies T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432597,
+        "name": "Afghanistan T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432598,
+        "name": "Bangladesh T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432599,
+        "name": "Sri Lanka T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432600,
+        "name": "Zimbabwe T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432601,
+        "name": "UAE T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432602,
+        "name": "Scotland T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432603,
+        "name": "Ireland T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432604,
+        "name": "Netherlands T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432605,
+        "name": "Oman T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432606,
+        "name": "Namibia T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432607,
+        "name": "Nepal T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432608,
+        "name": "United states T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4432609,
+        "name": "Papua New Guinea T10 (Virtual)",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4142",
+        "name": "International Virtual Cricket T10",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4432590,\"name\":\"India T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432591,\"name\":\"England  T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432592,\"name\":\"Pakistan T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432593,\"name\":\"New Zealand T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432594,\"name\":\"South Africa T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432595,\"name\":\"Australia T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432596,\"name\":\"West indies T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432597,\"name\":\"Afghanistan T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432598,\"name\":\"Bangladesh T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432599,\"name\":\"Sri Lanka T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432600,\"name\":\"Zimbabwe T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432601,\"name\":\"UAE T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432602,\"name\":\"Scotland T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432603,\"name\":\"Ireland T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432604,\"name\":\"Netherlands T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432605,\"name\":\"Oman T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432606,\"name\":\"Namibia T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432607,\"name\":\"Nepal T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432608,\"name\":\"United states T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null},{\"id\":4432609,\"name\":\"Papua New Guinea T10 (Virtual)\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4157",
+      "name": "Andhra Premier League 2022",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": false,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4543127,\"name\":\"Godavari Titans\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543128,\"name\":\"Bezawada Tigers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543129,\"name\":\"Coastal Riders\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543130,\"name\":\"Uttarandhra Lions\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543131,\"name\":\"Rayalaseema Kings\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543132,\"name\":\"Vizag Warriors\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4543127,
+        "name": "Godavari Titans",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4543128,
+        "name": "Bezawada Tigers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4543129,
+        "name": "Coastal Riders",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4543130,
+        "name": "Uttarandhra Lions",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4543131,
+        "name": "Rayalaseema Kings",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4543132,
+        "name": "Vizag Warriors",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4157",
+        "name": "Andhra Premier League 2022",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": false,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4543127,\"name\":\"Godavari Titans\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543128,\"name\":\"Bezawada Tigers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543129,\"name\":\"Coastal Riders\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543130,\"name\":\"Uttarandhra Lions\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543131,\"name\":\"Rayalaseema Kings\",\"sortPriority\":0,\"metadata\":null},{\"id\":4543132,\"name\":\"Vizag Warriors\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4174",
+      "name": "Dream11 Spice Isle T10 , 2023",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4917111,\"name\":\"Clove Chellengers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917112,\"name\":\"Bay Leaf Blasters\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917113,\"name\":\"Saffron Strikers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917114,\"name\":\"Nutmeg Warriors\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917115,\"name\":\"Ginger Generals\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917116,\"name\":\"Cinnamon Pacers\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4917111,
+        "name": "Clove Chellengers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4917112,
+        "name": "Bay Leaf Blasters",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4917113,
+        "name": "Saffron Strikers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4917114,
+        "name": "Nutmeg Warriors",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4917115,
+        "name": "Ginger Generals",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4917116,
+        "name": "Cinnamon Pacers",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4174",
+        "name": "Dream11 Spice Isle T10 , 2023",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4917111,\"name\":\"Clove Chellengers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917112,\"name\":\"Bay Leaf Blasters\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917113,\"name\":\"Saffron Strikers\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917114,\"name\":\"Nutmeg Warriors\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917115,\"name\":\"Ginger Generals\",\"sortPriority\":0,\"metadata\":null},{\"id\":4917116,\"name\":\"Cinnamon Pacers\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4175",
+      "name": "St. Lucia T10 Blast 2023.",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4942560,\"name\":\"Mon Repos Stars\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942561,\"name\":\"Vieux Fort North Raiders\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942562,\"name\":\"Choiseul Coal Pots\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942563,\"name\":\"South Castries Lions\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942564,\"name\":\"Micoud Eagles\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942565,\"name\":\"Babonneau Leatherbacks\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942566,\"name\":\"Central Castries Mindoo Heritage\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942567,\"name\":\"Soufriere Sulphur City Star\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4942560,
+        "name": "Mon Repos Stars",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942561,
+        "name": "Vieux Fort North Raiders",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942562,
+        "name": "Choiseul Coal Pots",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942563,
+        "name": "South Castries Lions",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942564,
+        "name": "Micoud Eagles",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942565,
+        "name": "Babonneau Leatherbacks",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942566,
+        "name": "Central Castries Mindoo Heritage",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4942567,
+        "name": "Soufriere Sulphur City Star",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4175",
+        "name": "St. Lucia T10 Blast 2023.",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4942560,\"name\":\"Mon Repos Stars\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942561,\"name\":\"Vieux Fort North Raiders\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942562,\"name\":\"Choiseul Coal Pots\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942563,\"name\":\"South Castries Lions\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942564,\"name\":\"Micoud Eagles\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942565,\"name\":\"Babonneau Leatherbacks\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942566,\"name\":\"Central Castries Mindoo Heritage\",\"sortPriority\":0,\"metadata\":null},{\"id\":4942567,\"name\":\"Soufriere Sulphur City Star\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4178",
+      "name": "Emirates D10 Tournament, 2023",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":4964507,\"name\":\"Abu Dhabi\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964508,\"name\":\"Dubai\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964509,\"name\":\"Sharjah\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964510,\"name\":\"Ajman\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964511,\"name\":\"Fujairah\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964512,\"name\":\"Emirates Blues\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964513,\"name\":\"Emirates Reds\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 4964507,
+        "name": "Abu Dhabi",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964508,
+        "name": "Dubai",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964509,
+        "name": "Sharjah",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964510,
+        "name": "Ajman",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964511,
+        "name": "Fujairah",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964512,
+        "name": "Emirates Blues",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 4964513,
+        "name": "Emirates Reds",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4178",
+        "name": "Emirates D10 Tournament, 2023",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":4964507,\"name\":\"Abu Dhabi\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964508,\"name\":\"Dubai\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964509,\"name\":\"Sharjah\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964510,\"name\":\"Ajman\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964511,\"name\":\"Fujairah\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964512,\"name\":\"Emirates Blues\",\"sortPriority\":0,\"metadata\":null},{\"id\":4964513,\"name\":\"Emirates Reds\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4181",
+      "name": "Dream11 Trinidad T10 Blast 2023.",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":5001639,\"name\":\"Blue Devils\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001640,\"name\":\"Parakeet Buccaneers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001641,\"name\":\"Scoa King\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001642,\"name\":\"Steelpan Players\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001643,\"name\":\"Giants T&T\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001644,\"name\":\"Scarlet Ibis Scorchers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001645,\"name\":\"Samp Army Cocrico Cavaliers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001646,\"name\":\"Rungetters\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 5001639,
+        "name": "Blue Devils",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001640,
+        "name": "Parakeet Buccaneers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001641,
+        "name": "Scoa King",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001642,
+        "name": "Steelpan Players",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001643,
+        "name": "Giants T&T",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001644,
+        "name": "Scarlet Ibis Scorchers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001645,
+        "name": "Samp Army Cocrico Cavaliers",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5001646,
+        "name": "Rungetters",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4181",
+        "name": "Dream11 Trinidad T10 Blast 2023.",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":5001639,\"name\":\"Blue Devils\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001640,\"name\":\"Parakeet Buccaneers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001641,\"name\":\"Scoa King\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001642,\"name\":\"Steelpan Players\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001643,\"name\":\"Giants T&T\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001644,\"name\":\"Scarlet Ibis Scorchers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001645,\"name\":\"Samp Army Cocrico Cavaliers\",\"sortPriority\":0,\"metadata\":null},{\"id\":5001646,\"name\":\"Rungetters\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4184",
+      "name": "Jamaica T10 2023.",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":5035169,\"name\":\"Middlesex United Stars\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035170,\"name\":\"Surrey Kings\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035171,\"name\":\"Surrey Royals\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035172,\"name\":\"Cornwall Warriors\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035173,\"name\":\"Middlesex Titans\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035174,\"name\":\"Surrey Risers\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 5035169,
+        "name": "Middlesex United Stars",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5035170,
+        "name": "Surrey Kings",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5035171,
+        "name": "Surrey Royals",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5035172,
+        "name": "Cornwall Warriors",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5035173,
+        "name": "Middlesex Titans",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5035174,
+        "name": "Surrey Risers",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4184",
+        "name": "Jamaica T10 2023.",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":5035169,\"name\":\"Middlesex United Stars\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035170,\"name\":\"Surrey Kings\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035171,\"name\":\"Surrey Royals\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035172,\"name\":\"Cornwall Warriors\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035173,\"name\":\"Middlesex Titans\",\"sortPriority\":0,\"metadata\":null},{\"id\":5035174,\"name\":\"Surrey Risers\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "4185",
+      "name": "Zim Afro T10 2023.",
+      "provider": "BETHUBS"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+      "runners": "[{\"id\":5099559,\"name\":\"Harare Hurricanes\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099560,\"name\":\"Bulawayo Braves\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099561,\"name\":\"Cape Town Samp Army\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099562,\"name\":\"Durban Qalandars\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099563,\"name\":\"Joburg Buffaloes\",\"sortPriority\":0,\"metadata\":null}]"
+    },
+    "runners": [
+      {
+        "id": 5099559,
+        "name": "Harare Hurricanes",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5099560,
+        "name": "Bulawayo Braves",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5099561,
+        "name": "Cape Town Samp Army",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5099562,
+        "name": "Durban Qalandars",
+        "sortPriority": 0,
+        "metadata": null
+      },
+      {
+        "id": 5099563,
+        "name": "Joburg Buffaloes",
+        "sortPriority": 0,
+        "metadata": null
+      }
+    ],
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "4185",
+        "name": "Zim Afro T10 2023.",
+        "provider": "BETHUBS"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {
+        "runners": "[{\"id\":5099559,\"name\":\"Harare Hurricanes\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099560,\"name\":\"Bulawayo Braves\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099561,\"name\":\"Cape Town Samp Army\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099562,\"name\":\"Durban Qalandars\",\"sortPriority\":0,\"metadata\":null},{\"id\":5099563,\"name\":\"Joburg Buffaloes\",\"sortPriority\":0,\"metadata\":null}]"
+      }
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "9886504",
+      "name": "Womens One Day Internationals",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "9886504",
+        "name": "Womens One Day Internationals",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "9962116",
+      "name": "One Day Internationals",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "9962116",
+        "name": "One Day Internationals",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "9992899",
+      "name": "International Twenty20 Matches",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "9992899",
+        "name": "International Twenty20 Matches",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  },
+  {
+    "eventType": {
+      "id": "4",
+      "name": "Cricket"
+    },
+    "competition": {
+      "id": "9998907",
+      "name": "Tamil Nadu Premier League",
+      "provider": "BETFAIR"
+    },
+    "events": [],
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {},
+    "runners": null,
+    "toMarketDetail": {
+      "eventType": {
+        "id": "4",
+        "name": "Cricket"
+      },
+      "competition": {
+        "id": "9998907",
+        "name": "Tamil Nadu Premier League",
+        "provider": "BETFAIR"
+      },
+      "event": null,
+      "catalogue": null,
+      "recordType": "COMPETITION",
+      "isActive": true,
+      "isArchived": false,
+      "metadata": {}
+    }
+  }
+]

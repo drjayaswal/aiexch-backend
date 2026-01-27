@@ -22,6 +22,7 @@ export const sportsRoutes = new Elysia({ prefix: "/sports" })
   .get("/games", async ({ set }) => {
     try {
       const data = await SportsService.getSports();
+      console.log("data",data)
       set.status = 200;
       return { success: true, data };
     } catch {
@@ -97,6 +98,7 @@ export const sportsRoutes = new Elysia({ prefix: "/sports" })
   })
   .get("/series/:eventTypeId", async ({ params, set }) => {
     try {
+      
       const data = await SportsService.getSeriesListWithMatches({
         eventTypeId: params.eventTypeId,
       });

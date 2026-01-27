@@ -8,6 +8,7 @@ const clientIdMap = new WeakMap<any, string>();
 export const sportsWebSocketRoutes = new Elysia({ prefix: "/sports" })
   .ws("/ws", {
     open(ws) {
+     
       const clientId = `client-${++clientIdCounter}-${Date.now()}`;
       (ws as any).data = { clientId };
       clientIdMap.set(ws, clientId);

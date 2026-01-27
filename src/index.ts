@@ -35,15 +35,15 @@ const app = new Elysia()
       origin: allowAllOrigins
         ? true // Allow all origins - useful for local dev connecting to prod
         : [
-          "http://localhost:3000",
-          "https://aiexch-two.vercel.app",
-          "https://aiexch.com",
-          "https://www.aiexch.com",
-        ],
+            "http://localhost:3000",
+            "https://aiexch-two.vercel.app",
+            "https://aiexch.com",
+            "https://www.aiexch.com",
+          ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       // allowedHeaders: ["Content-Type", "Authorization", "x-whitelabel-domain"],
       credentials: true,
-    })
+    }),
   )
   .use(cookie())
   .onError(({ code, error, set }) => {
