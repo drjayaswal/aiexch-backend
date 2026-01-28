@@ -291,7 +291,7 @@ class SportsWebSocketManager {
               );
             } else {
             }
-
+// console.log("kese ho",seriesStructure[0].matches[0])
             // Always fetch fresh odds for all matches
             data = await Promise.all(
               (seriesStructure as any[]).map(async (series: any) => {
@@ -299,7 +299,7 @@ class SportsWebSocketManager {
                   series.matches.map(async (match: any) => {
                     const odds = await SportsService.getMarketsWithOdds({
                       eventTypeId: subscription.eventTypeId,
-                      eventId: match.event.id,
+                      eventId: match.id,
                     });
 
                     return {

@@ -13,6 +13,9 @@ import { MatchResult } from "../types/sports/results";
 import { CacheService } from "./cache";
 import dummysports from "../dummy/sportsevents.json"
 import seriesData from "../dummy/series.json";
+import matchesData from "../dummy/matches.json";
+import marketData from "../dummy/getMarkets.json";
+import IndividualMarketData from "../dummy/getMarketByMarketId.json";
 
 const api = axios.create({
   baseURL: process.env.SPORTS_GAME_PROVIDER_BASE_URL || "http://100.30.62.142",
@@ -53,10 +56,8 @@ export const SportsService = {
       const results = await Promise.all(
         chunks.map(async (chunk) => {
           const marketIds = chunk.join(",");
-          const response = await api.get(
-            `/getMarketsOdds?EventTypeID=${eventTypeId}&marketId=${marketIds}`
-          );
-          const rawData = validateArray(response.data);
+         
+          const rawData = validateArray(IndividualMarketData.catalogue);
           return rawData.map((item) => {
             if (typeof item === "string") {
               try {
@@ -329,7 +330,6 @@ export const SportsService = {
       if (cached) return cached;
       
       const data = validateArray<any>(seriesData);
-      console.log("data",data)
 
       await CacheService.set(cacheKey, data, 3 * 60 * 60); // 3 hours
       return data;
@@ -348,13 +348,11 @@ export const SportsService = {
   }) {
     const cacheKey = `matches:${eventTypeId}:${competitionId}`;
     try {
-      const cached = await CacheService.get<MatchItem[]>(cacheKey);
-      if (cached) return cached;
+      // const cached = await CacheService.get<MatchItem[]>(cacheKey);
+      // if (cached) return cached;
 
-      const response = await api.get(
-        `/fetch_data?Action=listEvents&EventTypeID=${eventTypeId}&CompetitionID=${competitionId}`
-      );
-      const data = validateArray<MatchItem>(response.data);
+   console.log("macthesdata",matchesData)
+      const data = validateArray<any>(matchesData.events);
 
       await CacheService.set(cacheKey, data, 2 * 60 * 60); // 2 hours
       return data;
@@ -375,14 +373,13 @@ export const SportsService = {
   }) {
     const cacheKey = `markets:${eventTypeId}:${eventId}`;
     try {
-      const cached = await CacheService.get<MarketItem[]>(cacheKey);
-      if (cached) return cached;
+      // const cached = await CacheService.get<MarketItem[]>(cacheKey);
+      // if (cached) return cached;
 
-      const response = await api.get(
-        `/getMarkets?EventTypeID=${eventTypeId}&EventID=${eventId}`
-      );
 
-      const data = validateArray<MarketItem>(response.data);
+     
+
+      const data = validateArray<MarketItem>(marketData.catalogues);
 
       await CacheService.set(cacheKey, data, 4 * 60 * 60); // 4 hours
       return data;
@@ -425,7 +422,9 @@ export const SportsService = {
     eventId: string;
   }) {
     try {
+      console.log("yha pe")
       const markets = await this.getMarkets({ eventTypeId, eventId });
+      // console.log("mmm",markets)
 
       if (!markets || markets.length === 0) {
         return [];

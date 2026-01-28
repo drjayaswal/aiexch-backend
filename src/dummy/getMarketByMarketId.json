@@ -1,0 +1,65 @@
+{
+    "eventType": {
+        "id": "4",
+        "name": "Cricket"
+    },
+    "competition": {
+        "id": "11045255",
+        "name": "ACC Emerging Teams Cup",
+        "provider": "BETFAIR"
+    },
+    "event": {
+        "id": "32493069",
+        "name": "India A v Pakistan A",
+        "countryCode": "GB",
+        "venue": null,
+        "openDate": "2023-07-19T08:30:00Z"
+    },
+    "catalogue": {
+        "marketId": "1.216156052",
+        "marketTime": "2023-07-19T08:30:00Z",
+        "marketType": "MATCH_ODDS",
+        "bettingType": "ODDS",
+        "marketName": "Match Odds",
+        "provider": "BETFAIR",
+        "marketCondition": {
+            "marketId": "1.216156052",
+            "betLock": false,
+            "minBet": 0,
+            "maxBet": 0,
+            "maxProfit": 2000000,
+            "betDelay": 5,
+            "mtp": 15,
+            "allowUnmatchBet": false,
+            "potLimit": 0,
+            "volume": 0
+        },
+        "status": "CLOSED",
+        "inPlay": true,
+        "sortPriority": 0,
+        "runners": [
+            {
+                "id": 3351855,
+                "name": "India A",
+                "sortPriority": 0,
+                "metadata": {
+                    "runnerId": "3351855"
+                }
+            },
+            {
+                "id": 8890212,
+                "name": "Pakistan A",
+                "sortPriority": 0,
+                "metadata": {
+                    "runnerId": "8890212"
+                }
+            }
+        ]
+    },
+    "recordType": "MARKET",
+    "isActive": true,
+    "isArchived": false,
+    "metadata": {
+        "messages": "[{\"time\":1689703708,\"message\":\"Soccer Bookmaker Started in Our Exchange..\",\"isActive\":true}]"
+    }
+}
