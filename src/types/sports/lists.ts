@@ -37,6 +37,9 @@ export interface MarketItem {
   marketStartTime: string; // ISO date string
   totalMatched: string;
   runners: Runner[];
+    // Add this
+  odds?: any | null;
+
 }
 
 export interface Runner {

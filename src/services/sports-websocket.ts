@@ -263,7 +263,8 @@ class SportsWebSocketManager {
               const seriesList = await SportsService.getSeriesList({
                 eventTypeId: subscription.eventTypeId,
               });
-              console.log("ss",seriesList)
+              
+              
 
               seriesStructure = await Promise.all(
                 seriesList.map(async (series: any) => {
@@ -301,6 +302,7 @@ class SportsWebSocketManager {
                       eventTypeId: subscription.eventTypeId,
                       eventId: match.id,
                     });
+                    
 
                     return {
                       ...match,
@@ -315,6 +317,7 @@ class SportsWebSocketManager {
                 };
               })
             );
+
 
             const seriesCount = Array.isArray(data) ? data.length : 0;
             if (seriesCount === 0) {

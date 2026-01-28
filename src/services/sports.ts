@@ -16,6 +16,12 @@ import seriesData from "../dummy/series.json";
 import matchesData from "../dummy/matches.json";
 import marketData from "../dummy/getMarkets.json";
 import IndividualMarketData from "../dummy/getMarketByMarketId.json";
+import odds from "../dummy/odds.json"
+
+type OddsObject = {
+  [key: string]: any;
+};
+
 
 const api = axios.create({
   baseURL: process.env.SPORTS_GAME_PROVIDER_BASE_URL || "http://100.30.62.142",
@@ -53,24 +59,16 @@ export const SportsService = {
     }
 
     try {
-      const results = await Promise.all(
-        chunks.map(async (chunk) => {
-          const marketIds = chunk.join(",");
+      // const results = await Promise.all(
+      //   chunks.map(async (chunk) => {
+      //     const marketIds = chunk.join(",");
          
-          const rawData = validateArray(IndividualMarketData.catalogue);
-          return rawData.map((item) => {
-            if (typeof item === "string") {
-              try {
-                return JSON.parse(item);
-              } catch {
-                return item;
-              }
-            }
-            return item;
-          });
-        })
-      );
-      return results.flat();
+         
+
+          
+      //   })
+      // );
+      return odds;
     } catch (error) {
       // console.error("getOdds error:");
       return [];
@@ -348,10 +346,10 @@ export const SportsService = {
   }) {
     const cacheKey = `matches:${eventTypeId}:${competitionId}`;
     try {
-      // const cached = await CacheService.get<MatchItem[]>(cacheKey);
-      // if (cached) return cached;
+      const cached = await CacheService.get<MatchItem[]>(cacheKey);
+      if (cached) return cached;
 
-   console.log("macthesdata",matchesData)
+   
       const data = validateArray<any>(matchesData.events);
 
       await CacheService.set(cacheKey, data, 2 * 60 * 60); // 2 hours
@@ -413,54 +411,57 @@ export const SportsService = {
       return [];
     }
   },
+async getMarketsWithOdds({
+  eventTypeId,
+  eventId,
+}: {
+  eventTypeId: string;
+  eventId: string;
+}) {
+  try {
+    const markets = await this.getMarkets({ eventTypeId, eventId });
 
-  async getMarketsWithOdds({
-    eventTypeId,
-    eventId,
-  }: {
-    eventTypeId: string;
-    eventId: string;
-  }) {
-    try {
-      console.log("yha pe")
-      const markets = await this.getMarkets({ eventTypeId, eventId });
-      // console.log("mmm",markets)
-
-      if (!markets || markets.length === 0) {
-        return [];
-      }
-
-      const marketIds = markets
-        .map((market) => market.marketId)
-        .filter(Boolean);
-
-      if (marketIds.length === 0) {
-        return markets;
-      }
-
-      const odds = await this.getOdds({ eventTypeId, marketId: marketIds });
-
-      const marketsWithOdds = markets.map((market) => {
-        const marketOdds = odds.find(
-          (odd) => odd && odd.marketId === market.marketId
-        );
-        return {
-          ...market,
-          odds: marketOdds || null,
-        };
-      });
-
-      // Sort by sr_no field
-      return marketsWithOdds.sort((a, b) => {
-        const aSrNo = (a as any).sr_no || 0;
-        const bSrNo = (b as any).sr_no || 0;
-        return aSrNo - bSrNo;
-      });
-    } catch (error) {
-      console.error("WithOdds error:");
+    if (!markets || markets.length === 0) {
       return [];
     }
-  },
+
+    const marketIds = markets
+      .map((market) => market.marketId)
+      .filter(Boolean);
+
+    if (marketIds.length === 0) {
+      return markets;
+    }
+
+const oddsObject: OddsObject = await this.getOdds({
+  eventTypeId,
+  marketId: marketIds,
+});
+
+    
+
+    const marketsWithOdds = markets.map((market) => {
+      // ⚡ Here is the key change
+      const marketOdds = oddsObject[market.marketId];
+
+      return {
+        ...market,
+        odds: marketOdds || null,
+      };
+    });
+
+    // Sort by sr_no field
+    return marketsWithOdds.sort((a, b) => {
+      const aSrNo = (a as any).sr_no || 0;
+      const bSrNo = (b as any).sr_no || 0;
+      return aSrNo - bSrNo;
+    });
+  } catch (error) {
+    console.error("WithOdds error:");
+    return [];
+  }
+}
+,
   async getBookmakersWithOdds({
     eventTypeId,
     eventId,
@@ -571,10 +572,11 @@ export const SportsService = {
         eventId: matchId,
       });
 
-      const score = this.getScore({
+      const score = await this.getScore({
         eventTypeId,
         matchId,
       });
+      console.log("score",score)
 
       // 🐎 Skip unnecessary APIs for Horse Racing
       const premiumFancy = !isRacingEvent
