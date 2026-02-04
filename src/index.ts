@@ -13,6 +13,7 @@ import { casinoAggregatorRoutes } from "./routes/casino/aggregator";
 import { casinoCallbackRoutes } from "./routes/casino/callback";
 import { casinoGamesRoutes } from "./routes/casino/games";
 import { startBetSettlementService } from "./services/bet-settlement";
+import { seriesRoutes } from "./routes/series-route";
 import "dotenv/config";
 
 // // Initialize services
@@ -46,6 +47,7 @@ const app = new Elysia()
     }),
   )
   .use(cookie())
+
   .onError(({ code, error, set }) => {
     if (code === "VALIDATION") {
       set.status = 400;
@@ -62,6 +64,8 @@ const app = new Elysia()
         error instanceof Error && (error.message || "Internal server error"),
     };
   })
+  
+  .use(seriesRoutes)
   .use(authRoutes)
   .use(profileRoutes)
   .use(adminRoutes)

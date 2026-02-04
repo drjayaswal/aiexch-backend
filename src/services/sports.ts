@@ -35,7 +35,6 @@ function validateArray<T>(data: unknown, defaultValue: T[] = []): T[] {
 export const SportsService = {
   async getSports() {
     try {
-    
       const response = dummysports as Sports[];
       const data = validateArray<Sports>(response);
       return data;
@@ -62,10 +61,7 @@ export const SportsService = {
       // const results = await Promise.all(
       //   chunks.map(async (chunk) => {
       //     const marketIds = chunk.join(",");
-         
-         
 
-          
       //   })
       // );
       return odds;
@@ -92,7 +88,7 @@ export const SportsService = {
         chunks.map(async (chunk) => {
           const marketIds = chunk.join(",");
           const response = await api.get(
-            `/getBookmakerOdds?EventTypeID=${eventTypeId}&marketId=${marketIds}`
+            `/getBookmakerOdds?EventTypeID=${eventTypeId}&marketId=${marketIds}`,
           );
           const rawData = validateArray(response.data);
           return rawData.map((item) => {
@@ -105,7 +101,7 @@ export const SportsService = {
             }
             return item;
           });
-        })
+        }),
       );
       return results.flat();
     } catch (error) {
@@ -124,7 +120,7 @@ export const SportsService = {
     const marketIds = Array.isArray(marketId) ? marketId.join(",") : marketId;
     try {
       const response = await api.get(
-        `/getBookmakerOdds?EventTypeID=${eventTypeId}&marketId=${marketIds}`
+        `/getBookmakerOdds?EventTypeID=${eventTypeId}&marketId=${marketIds}`,
       );
       const data = validateArray<BookmakerItem>(response.data);
       return data;
@@ -144,8 +140,9 @@ export const SportsService = {
     gtype?: string;
   }) {
     try {
-      const url = `/getSessions?EventTypeID=${eventTypeId}&matchId=${matchId}${gtype ? `&gtype=${gtype}` : ""
-        }`;
+      const url = `/getSessions?EventTypeID=${eventTypeId}&matchId=${matchId}${
+        gtype ? `&gtype=${gtype}` : ""
+      }`;
 
       const response = await api.get(url);
       const rawData = validateArray(response.data);
@@ -182,7 +179,6 @@ export const SportsService = {
           return (a.RunnerName || "").localeCompare(b.RunnerName || "");
         });
 
-
       return parsedData;
     } catch (error) {
       // console.error("getSessions error:", error);
@@ -199,7 +195,7 @@ export const SportsService = {
   }) {
     try {
       const response = await api.get(
-        `/getPremium?EventTypeID=${eventTypeId}&matchId=${matchId}`
+        `/getPremium?EventTypeID=${eventTypeId}&matchId=${matchId}`,
       );
       const data = validateArray<FancyMarket>(response.data);
       return data;
@@ -218,7 +214,7 @@ export const SportsService = {
   }) {
     try {
       const response = await api.get(
-        `/score?EventTypeID=${eventTypeId}&matchId=${matchId}`
+        `/score?EventTypeID=${eventTypeId}&matchId=${matchId}`,
       );
       return response.data && typeof response.data === "object"
         ? (response.data as Score)
@@ -232,7 +228,7 @@ export const SportsService = {
   async getScoreMatchesList({ eventTypeId }: { eventTypeId: string }) {
     try {
       const response = await api.get(
-        `/matches/list?EventTypeID=${eventTypeId}`
+        `/matches/list?EventTypeID=${eventTypeId}`,
       );
       return validateArray<ScoreMatches>(response.data);
     } catch (error) {
@@ -251,7 +247,7 @@ export const SportsService = {
     const marketIdStr = marketIds.slice(0, 30).join(","); // Max 30 markets
     try {
       const response = await api.get(
-        `/oddsResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`
+        `/oddsResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`,
       );
       const data = validateArray<Odds>(response.data);
       return data;
@@ -271,7 +267,7 @@ export const SportsService = {
     const marketIdStr = marketIds.slice(0, 30).join(","); // Max 30 markets
     try {
       const response = await api.get(
-        `/bookmakersResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`
+        `/bookmakersResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`,
       );
       const data = validateArray<MatchResult>(response.data);
       return data;
@@ -291,7 +287,7 @@ export const SportsService = {
     const marketIdStr = marketIds.slice(0, 30).join(","); // Max 30 markets
     try {
       const response = await api.get(
-        `/sessionsResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`
+        `/sessionsResults?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`,
       );
       const data = validateArray<MatchResult>(response.data);
       return data;
@@ -311,7 +307,7 @@ export const SportsService = {
     const marketIdStr = marketIds.slice(0, 30).join(","); // Max 30 markets
     try {
       const response = await api.get(
-        `/fancy1Results?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`
+        `/fancy1Results?EventTypeID=${eventTypeId}&marketId=${marketIdStr}`,
       );
       const data = validateArray<MatchResult>(response.data);
       return data;
@@ -324,15 +320,27 @@ export const SportsService = {
   async getSeriesList({ eventTypeId }: { eventTypeId: string }) {
     const cacheKey = `series:${eventTypeId}`;
     try {
-      const cached = await CacheService.get<CompetitionItem[]>(cacheKey);
-      if (cached) return cached;
-      
+      console.log("Fetching series list for eventType:", eventTypeId);
+
+      // const cached = await CacheService.get<CompetitionItem[]>(cacheKey);
+      // if (Array.isArray(cached) && cached.length > 0) {
+      //   return cached;
+      // }
+
+    
       const data = validateArray<any>(seriesData);
 
-      await CacheService.set(cacheKey, data, 3 * 60 * 60); // 3 hours
-      return data;
+      // Only cache if data is not empty
+      // if (data && data.length > 0) {
+      //   console.log("Caching series data, count:", data.length);
+      //   // await CacheService.set(cacheKey, data, 3 * 60 * 60); // 3 hours
+      // } else {
+      //   console.log("No data to cache, returning empty array");
+      // }
+
+      return data || [];
     } catch (error: any) {
-      console.error("DEBUG - getSeriesList error:");
+      console.error("DEBUG - getSeriesList error:", error);
       return [];
     }
   },
@@ -349,15 +357,12 @@ export const SportsService = {
       const cached = await CacheService.get<MatchItem[]>(cacheKey);
       if (cached) return cached;
 
-   
       const data = validateArray<any>(matchesData.events);
 
       await CacheService.set(cacheKey, data, 2 * 60 * 60); // 2 hours
       return data;
     } catch (error: any) {
-      console.error(
-        "getMatchList error:"
-      );
+      console.error("getMatchList error:");
       return [];
     }
   },
@@ -373,9 +378,6 @@ export const SportsService = {
     try {
       // const cached = await CacheService.get<MarketItem[]>(cacheKey);
       // if (cached) return cached;
-
-
-     
 
       const data = validateArray<MarketItem>(marketData.catalogues);
 
@@ -400,7 +402,7 @@ export const SportsService = {
       if (cached) return cached;
 
       const response = await api.get(
-        `/getBookmakers?EventTypeID=${eventTypeId}&EventID=${eventId}`
+        `/getBookmakers?EventTypeID=${eventTypeId}&EventID=${eventId}`,
       );
       const data = validateArray<BookmakerMarket>(response.data);
 
@@ -411,57 +413,54 @@ export const SportsService = {
       return [];
     }
   },
-async getMarketsWithOdds({
-  eventTypeId,
-  eventId,
-}: {
-  eventTypeId: string;
-  eventId: string;
-}) {
-  try {
-    const markets = await this.getMarkets({ eventTypeId, eventId });
+  async getMarketsWithOdds({
+    eventTypeId,
+    eventId,
+  }: {
+    eventTypeId: string;
+    eventId: string;
+  }) {
+    try {
+      const markets = await this.getMarkets({ eventTypeId, eventId });
 
-    if (!markets || markets.length === 0) {
+      if (!markets || markets.length === 0) {
+        return [];
+      }
+
+      const marketIds = markets
+        .map((market) => market.marketId)
+        .filter(Boolean);
+
+      if (marketIds.length === 0) {
+        return markets;
+      }
+
+      const oddsObject: OddsObject = await this.getOdds({
+        eventTypeId,
+        marketId: marketIds,
+      });
+
+      const marketsWithOdds = markets.map((market) => {
+        // ⚡ Here is the key change
+        const marketOdds = oddsObject[market.marketId];
+
+        return {
+          ...market,
+          odds: marketOdds || null,
+        };
+      });
+
+      // Sort by sr_no field
+      return marketsWithOdds.sort((a, b) => {
+        const aSrNo = (a as any).sr_no || 0;
+        const bSrNo = (b as any).sr_no || 0;
+        return aSrNo - bSrNo;
+      });
+    } catch (error) {
+      console.error("WithOdds error:");
       return [];
     }
-
-    const marketIds = markets
-      .map((market) => market.marketId)
-      .filter(Boolean);
-
-    if (marketIds.length === 0) {
-      return markets;
-    }
-
-const oddsObject: OddsObject = await this.getOdds({
-  eventTypeId,
-  marketId: marketIds,
-});
-
-    
-
-    const marketsWithOdds = markets.map((market) => {
-      // ⚡ Here is the key change
-      const marketOdds = oddsObject[market.marketId];
-
-      return {
-        ...market,
-        odds: marketOdds || null,
-      };
-    });
-
-    // Sort by sr_no field
-    return marketsWithOdds.sort((a, b) => {
-      const aSrNo = (a as any).sr_no || 0;
-      const bSrNo = (b as any).sr_no || 0;
-      return aSrNo - bSrNo;
-    });
-  } catch (error) {
-    console.error("WithOdds error:");
-    return [];
-  }
-}
-,
+  },
   async getBookmakersWithOdds({
     eventTypeId,
     eventId,
@@ -491,7 +490,7 @@ const oddsObject: OddsObject = await this.getOdds({
 
       const marketsWithOdds = markets.map((market) => {
         const marketOdds = odds.find(
-          (odd) => odd && odd.marketId === market.marketId
+          (odd) => odd && odd.marketId === market.marketId,
         );
         return {
           ...market,
@@ -509,8 +508,7 @@ const oddsObject: OddsObject = await this.getOdds({
   async getSeriesListWithMatches({ eventTypeId }: { eventTypeId: string }) {
     try {
       const seriesList = await this.getSeriesList({ eventTypeId });
-    console.log("list",seriesList)
-
+      console.log("list", seriesList);
 
       const seriesWithMatches = await Promise.all(
         seriesList.map(async (series) => {
@@ -524,7 +522,7 @@ const oddsObject: OddsObject = await this.getOdds({
             name: series.competition.name,
             matches,
           };
-        })
+        }),
       );
 
       const seriesWithMatchesAndOdds = await Promise.all(
@@ -540,14 +538,14 @@ const oddsObject: OddsObject = await this.getOdds({
                 ...match,
                 odds,
               };
-            })
+            }),
           );
 
           return {
             ...series,
             matches: matchesWithOdds,
           };
-        })
+        }),
       );
 
       return seriesWithMatchesAndOdds;
@@ -576,7 +574,7 @@ const oddsObject: OddsObject = await this.getOdds({
         eventTypeId,
         matchId,
       });
-      console.log("score",score)
+      console.log("score", score);
 
       // 🐎 Skip unnecessary APIs for Horse Racing
       const premiumFancy = !isRacingEvent

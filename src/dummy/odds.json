@@ -1,26 +1,62 @@
 {
 "1.216156054": {
-    "marketId": "1.216156054",
-    "betDelay": 5,
-    "status": "CLOSED",
-    "inPlay": true,
-    "lastMatchTime": null,
-    "updateTime": 1689778837144,
-    "sportingEvent": false,
-    "runners": [
+  "marketId": "1.216156054",
+  "betDelay": 5,
+  "status": "CLOSED",
+  "inPlay": true,
+  "lastMatchTime": null,
+  "updateTime": 1689778837144,
+  "sportingEvent": false,
+  "runners": [
+    {
+      "selectionId": 3351855,
+      "status": "WINNER",
+      "back": [
         {
-            "selectionId": 3351855,
-            "status": "WINNER",
-            "back": [],
-            "lay": [],
-            "pnl": 0
+          "price": 1.82,
+          "size": 12500
         },
         {
-            "selectionId": 8890212,
-            "status": "LOSER",
-            "back": [],
-            "lay": [],
-            "pnl": 0
+          "price": 1.8,
+          "size": 8000
         }
-    ]
+      ],
+      "lay": [
+        {
+          "price": 1.84,
+          "size": 10000
+        },
+        {
+          "price": 1.86,
+          "size": 6000
+        }
+      ],
+      "pnl": 0
+    },
+    {
+      "selectionId": 8890212,
+      "status": "LOSER",
+      "back": [
+        {
+          "price": 2.1,
+          "size": 9000
+        },
+        {
+          "price": 2.08,
+          "size": 5000
+        }
+      ],
+      "lay": [
+        {
+          "price": 2.14,
+          "size": 8500
+        },
+        {
+          "price": 2.18,
+          "size": 4000
+        }
+      ],
+      "pnl": 0
+    }
+  ]
 }}
