@@ -33,13 +33,35 @@ export interface MatchItem {
 // Market List
 export interface MarketItem {
   marketId: string;
+  marketTime: string; // ISO date string
+  marketType: string; // e.g., "MATCH_ODDS", "TIED_MATCH", "OVERS"
+  bettingType: string; // e.g., "ODDS", "LINE", "BOOKMAKER"
   marketName: string;
-  marketStartTime: string; // ISO date string
-  totalMatched: string;
-  runners: Runner[];
-    // Add this
-  odds?: any | null;
-
+  provider: string; // e.g., "BETFAIR", "SKY", "BETHUBS"
+  marketCondition: {
+    marketId: string;
+    betLock: boolean;
+    minBet: number;
+    maxBet: number;
+    maxProfit: number;
+    betDelay: number;
+    mtp: number;
+    allowUnmatchBet: boolean;
+    potLimit: number;
+    volume: number;
+  };
+  status: "OPEN" | "CLOSED" | "INACTIVE" | "SUSPENDED";
+  inPlay: boolean;
+  sortPriority: number;
+  runners: {
+    id: number;
+    name: string;
+    sortPriority: number;
+    metadata: {
+      runnerId: string;
+    } | null;
+  }[];
+  odds?: any | null; // Optional odds data
 }
 
 export interface Runner {

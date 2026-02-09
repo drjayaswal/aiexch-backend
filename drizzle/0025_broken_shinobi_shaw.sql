@@ -1,0 +1,1 @@
+ALTER TABLE "bets" ALTER COLUMN "event_type_id" DROP DEFAULT;

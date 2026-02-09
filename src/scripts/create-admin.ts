@@ -1,14 +1,19 @@
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+// import dotenv from "dotenv";
+// import path from "path";
+// import { fileURLToPath } from "url";
+import "dotenv/config";
+
+
+// dotenv.config();
 
 // Load .env from the root directory FIRST
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, "../../.env") });
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 // Now import after env is loaded
-import { db } from "../db";
+// import { db } from "../index";
+import { db } from "@db/index";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { generateHashPassword } from "../utils/password";
@@ -66,7 +71,7 @@ async function createAdminUser() {
     console.log("Email:", result[0].email);
     console.log("Role:", result[0].role);
   } catch (error) {
-    console.error("Error creating admin user:");
+    console.error("Error creating admin user:", error);
   }
 }
 

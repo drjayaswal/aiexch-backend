@@ -14,7 +14,12 @@ import { casinoCallbackRoutes } from "./routes/casino/callback";
 import { casinoGamesRoutes } from "./routes/casino/games";
 import { startBetSettlementService } from "./services/bet-settlement";
 import { seriesRoutes } from "./routes/series-route";
+import http from "http";
 import "dotenv/config";
+import { initSocket } from "@services/socket-service";
+import { MarketCronService } from "@services/market-cron-service";
+import { startCronJobs } from "@db/seed";
+
 
 // // Initialize services
 async function initializeServices() {
@@ -26,9 +31,12 @@ initializeServices();
 
 const port = Number(process.env.PORT || 3001);
 
+
 // Temporarily allow all origins for development
 // Set ALLOW_ALL_ORIGINS=true in .env to enable this (works in production too)
-const allowAllOrigins = process.env.ALLOW_ALL_ORIGINS === "true" || process.env.NODE_ENV !== "production";
+const allowAllOrigins =
+  process.env.ALLOW_ALL_ORIGINS === "true" ||
+  process.env.NODE_ENV !== "production";
 
 const app = new Elysia()
   .use(
@@ -36,7 +44,7 @@ const app = new Elysia()
       origin: allowAllOrigins
         ? true // Allow all origins - useful for local dev connecting to prod
         : [
-            "http://localhost:3000",
+            "http://localhost:3002",
             "https://aiexch-two.vercel.app",
             "https://aiexch.com",
             "https://www.aiexch.com",
@@ -64,7 +72,7 @@ const app = new Elysia()
         error instanceof Error && (error.message || "Internal server error"),
     };
   })
-  
+
   .use(seriesRoutes)
   .use(authRoutes)
   .use(profileRoutes)
@@ -100,8 +108,17 @@ const app = new Elysia()
     };
   });
 
+
+
 // Bun has native WebSocket support, so we can use .listen() directly
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`🚀 Server is running on http://localhost:${port}`);
   console.log(`📡 WebSocket support enabled`);
+  //  startCronJobs();
 });
+initSocket();
+
+MarketCronService.init();
+
+
+console.log(`🔌Socket server initialized`);

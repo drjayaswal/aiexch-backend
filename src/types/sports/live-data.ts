@@ -1,16 +1,22 @@
 export interface Odds {
-  eventid: string;
-  marketId: string;
-  market: string;
-  updateTime: string; // ISO date string
-  status: string;
-  inplay: boolean;
-  totalMatched: number;
-  active: boolean;
-  markettype: string; // e.g., "ODDS"
-  runners: Runner[];
-  min: string;
-  max: string;
+  [marketId: string]: {
+    marketId: string;
+    betDelay: number;
+    status: "OPEN" | "CLOSED" | "SUSPENDED" | "INACTIVE";
+    inPlay: boolean;
+    lastMatchTime: string | null;
+    updateTime: number; // timestamp
+    sportingEvent: boolean;
+    runners: OddsRunner[];
+  };
+}
+
+export interface OddsRunner {
+  selectionId: number;
+  status: "ACTIVE" | "WINNER" | "LOSER" | "REMOVED" | "SUSPENDED";
+  back: [number, number][]; // [price, size] arrays
+  lay: [number, number][]; // [price, size] arrays
+  pnl: number;
 }
 
 export interface Runner {

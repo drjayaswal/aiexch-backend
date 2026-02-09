@@ -1,8 +1,11 @@
 // routes/series-route.ts
 import { Elysia, t } from "elysia";
-import { seriesCronService } from "../services/series-cron-service";
+import { seriesService, SeriesService} from "../services/series-cron-service";
 import { redis } from "@db/redis";
 import { param } from "drizzle-orm";
+import { SportsService } from "@services/sports";
+import { CacheService } from "@services/cache";
+import { getAvailableSportsList } from "@services/sports-service";
 
 
 
@@ -13,12 +16,14 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     async ({ params }) => {
 
        const { eventTypeId } = params;
-       console.log("ppp",params)
-       console.log("ttt",eventTypeId)
+
+      //  console.log("hloooo")
+      //  console.log("ppp",params)
+      //  console.log("ttt",eventTypeId)
 
       try {
         const { eventTypeId } = params;
-        const data = await seriesCronService.getSeriesData(eventTypeId);
+        const data = await seriesService.getSeriesData(eventTypeId);
           if (!data || !Array.isArray(data) || data.length === 0) {
             console.warn(
               `[SeriesCron] Empty data received. Skipping cache for eventTypeId=${eventTypeId}`,
@@ -61,17 +66,75 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     },
   )
 
+  .get("/getMarketWithOdds/:eventId", async ({params}) => {
+    const { eventId } = params;
+    try {
+      const data =await SportsService.getMarketsWithOdds({eventId})
+      return {
+        success: true,
+        eventId,
+        data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        eventId,
+        message: error.message || "Failed to fetch market with odds",
+        data: [],
+      };
+    }
+  })
+
+  .get("/getAllSeries/:eventTypeId", async ({params}) => {
+    const { eventTypeId } = params;
+    const cacheKey = `series:withMatches:${eventTypeId}`;
+    try {
+      console.log("yhaaa",eventTypeId)
+
+      const cachedData = await CacheService.get<any[]>(cacheKey);
+       if (cachedData) {
+         console.log(`[API] Cache HIT for ${cacheKey}`);
+         return {
+           success: true,
+           eventTypeId: eventTypeId,
+           data: cachedData,
+           timestamp: new Date().toISOString(),
+           count: cachedData.length,
+           message: `Series data for eventType ${eventTypeId} (from cache)`,
+           cached: true,
+         };
+       }
+        console.log(`[API] Cache MISS for ${cacheKey}, fetching fresh data...`);
+      const allSeriesData =
+        await SportsService.getSeriesWithMatches(eventTypeId);
+           if (allSeriesData.length > 0) {
+             await CacheService.set(cacheKey, allSeriesData, 5*60*60); // 30 seconds TTL
+           }
+      return {
+        success: true,
+        eventTypeId: eventTypeId,
+
+        data: allSeriesData,
+        timestamp: new Date().toISOString(),
+        count: allSeriesData.length,
+        message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
+      };
+    } catch (error) {
+      const err = error as Error;
+      return {
+        success: false,
+        eventTypeId: params.eventTypeId,
+        message: err.message || "Failed to fetch series data",
+        data: [],
+      };
+    }
+    
+  })
+
+  
   // Get available sports list
-  .get("/sports-list", () => {
-    const sportsList = [
-      { eventType: "4", name: "Cricket" },
-      { eventType: "-4", name: "KABADDI" },
-      { eventType: "-17", name: "Virtual T10" },
-      { eventType: "4339", name: "Greyhound Racing" },
-      { eventType: "7", name: "Horse Racing" },
-      { eventType: "1", name: "Football" },
-      { eventType: "2", name: "Tennis" },
-    ];
+  .get("/sports-list", async () => {
+    const sportsList = await getAvailableSportsList();
 
     return {
       success: true,

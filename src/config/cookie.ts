@@ -3,7 +3,8 @@ const isProduction = process.env.NODE_ENV === "production";
 export const cookieConfig = {
   accessToken: {
     httpOnly: true,
-    secure: true,
+    // Only use secure cookies in production (HTTPS). Allow local HTTP during development.
+    secure: isProduction,
     sameSite: "none" as const,
     // Don't set domain for cross-origin cookies - let browser handle it
     domain: undefined,
@@ -11,7 +12,7 @@ export const cookieConfig = {
   },
   refreshToken: {
     httpOnly: true,
-    secure: true,
+    secure: isProduction,
     sameSite: "none" as const,
     // Don't set domain for cross-origin cookies - let browser handle it
     domain: undefined,

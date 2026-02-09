@@ -1,12 +1,13 @@
 import { Elysia, t } from "elysia";
 import { db } from "../../db";
-import { sportsGames } from "../../db/schema";
+import { sports, sportsGames } from "../../db/schema";
 import { eq } from "drizzle-orm";
 
 export const sportsGamesRoutes = new Elysia({ prefix: "/sports-games" })
   .get("/", async ({ set }) => {
     try {
-      const games = await db.select().from(sportsGames);
+      const games = await db.select().from(sports);
+      console.log("gaa",games)
       set.status = 200;
       return { success: true, data: games };
     } catch (error) {

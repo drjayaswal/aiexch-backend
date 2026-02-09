@@ -10,6 +10,8 @@ import {
   integer,
   bigint,
   jsonb,
+  PgTextBuilder,
+  PgTable,
 } from "drizzle-orm/pg-core";
 import { generateNumericId } from "../utils/generateId";
 
@@ -531,3 +533,53 @@ export const withdrawalMethods = pgTable("withdrawal_methods", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+
+// Add these to your existing schema file
+
+export const sports = pgTable("sports", {
+  id: bigint("id", { mode: "number" })
+    .primaryKey()
+    .$defaultFn(() => Number(generateNumericId())),
+  sport_id: varchar("sport_id", { length: 50 }).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
+  is_active: boolean("is_active").default(true),
+  sort_order: integer("sort_order").default(0),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const competitions = pgTable("competitions", {
+  id: bigint("id", { mode: "number" })
+    .primaryKey()
+    .$defaultFn(() => Number(generateNumericId())),
+  competition_id: varchar("competition_id", { length: 50 }).notNull().unique(),
+  sport_id: varchar("sport_id", { length: 50 }).notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  provider: varchar("provider", { length: 50 }),
+  is_active: boolean("is_active").default(false),
+  is_archived: boolean("is_archived").default(false),
+  metadata: jsonb("metadata").default({}),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+
+
+// Create indexes
+export const sportsIndexes = [
+  // Create index for is_active for faster filtering
+  { table: sports, columns: [sports.is_active] },
+  { table: sports, columns: [sports.sort_order] },
+  
+  // Competition indexes
+  { table: competitions, columns: [competitions.sport_id] },
+  { table: competitions, columns: [competitions.is_active] },
+  { table: competitions, columns: [competitions.competition_id] },
+  
+  // Runner indexes
+];

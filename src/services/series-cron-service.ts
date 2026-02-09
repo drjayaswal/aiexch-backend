@@ -1,5 +1,4 @@
-// services/series-cron-service.ts
-import cron from "node-cron";
+// services/series-service.ts
 import { SportsService } from "./sports";
 
 // Simple in-memory cache
@@ -11,50 +10,9 @@ const cache = new Map<
   }
 >();
 
-export class SeriesCronService {
+export class SeriesService {
   constructor() {
-    console.log("[SeriesCron] Initializing with simple cache...");
-
-    // Run every 5 seconds to update cache
-    cron.schedule("*/5 * * * * *", async () => {
-      console.log("[SeriesCron] ⏰ Updating cache for all event types...");
-      await this.updateAllCaches();
-    });
-
-    console.log("[SeriesCron] ✅ Cron job scheduled to run every 5 seconds");
-  }
-
-  private async updateAllCaches() {
-    const eventTypes = ["4", "-4", "-17", "4339", "7", "1", "2"];
-
-    // Update each event type cache
-    for (const eventTypeId of eventTypes) {
-      try {
-        const freshData = await this.fetchFreshSeriesData(eventTypeId);
-
-        if (freshData.length > 0) {
-          // Update cache
-          cache.set(eventTypeId, {
-            data: freshData,
-            timestamp: Date.now(),
-          });
-
-          const totalMatches = freshData.reduce(
-            (sum, series) => sum + (series.matches?.length || 0),
-            0,
-          );
-
-          console.log(
-            `[SeriesCron] ✅ Cache updated for ${eventTypeId}: ${freshData.length} series, ${totalMatches} matches`,
-          );
-        }
-      } catch (error) {
-        console.error(
-          `[SeriesCron] ❌ Failed to update cache for ${eventTypeId}:`,
-          error,
-        );
-      }
-    }
+    console.log("[SeriesService] Initializing with simple cache...");
   }
 
   // API METHOD: Returns cached data if available, otherwise fetches fresh
@@ -64,13 +22,13 @@ export class SeriesCronService {
 
     if (cached) {
       console.log(
-        `[SeriesCron] 🚀 Cache HIT for ${eventTypeId}, returning cached data`,
+        `[SeriesService] 🚀 Cache HIT for ${eventTypeId}, returning cached data`,
       );
       return cached.data;
     }
 
     console.log(
-      `[SeriesCron] 🔄 Cache MISS for ${eventTypeId}, fetching fresh data...`,
+      `[SeriesService] 🔄 Cache MISS for ${eventTypeId}, fetching fresh data...`,
     );
 
     // If no cache, fetch fresh data
@@ -102,9 +60,39 @@ export class SeriesCronService {
     return result;
   }
 
+  // Clear cache for a specific event type
+  clearCache(eventTypeId: string): void {
+    cache.delete(eventTypeId);
+    console.log(`[SeriesService] Cache cleared for ${eventTypeId}`);
+  }
+
+  // Clear all cache
+  clearAllCache(): void {
+    cache.clear();
+    console.log("[SeriesService] All cache cleared");
+  }
+
+  // Get cache info (for debugging/monitoring)
+  getCacheInfo(): {
+    size: number;
+    entries: Array<{ key: string; timestamp: number; dataLength: number }>;
+  } {
+    const entries = Array.from(cache.entries()).map(([key, value]) => ({
+      key,
+      timestamp: value.timestamp,
+      dataLength: value.data.length,
+    }));
+
+    return {
+      size: cache.size,
+      entries,
+    };
+  }
+
   // Same fetch method as before
   private async fetchFreshSeriesData(eventTypeId: string): Promise<any[]> {
     try {
+      console.log("[SeriesService] Fetching data for event type:", eventTypeId);
       const seriesList = await SportsService.getSeriesList({
         eventTypeId: eventTypeId,
       });
@@ -157,7 +145,7 @@ export class SeriesCronService {
             };
           } catch (error) {
             console.error(
-              `[SeriesCron] ❌ Error getting matches for series ${series.competition.id}:`,
+              `[SeriesService] ❌ Error getting matches for series ${series.competition.id}:`,
               error,
             );
             return {
@@ -181,7 +169,6 @@ export class SeriesCronService {
             series.matches.map(async (match: any) => {
               try {
                 const odds = await SportsService.getMarketsWithOdds({
-                  eventTypeId: eventTypeId,
                   eventId: match.id,
                 });
 
@@ -191,7 +178,7 @@ export class SeriesCronService {
                 };
               } catch (error) {
                 console.error(
-                  `[SeriesCron] ❌ Failed to fetch odds for match ${match.id}:`,
+                  `[SeriesService] ❌ Failed to fetch odds for match ${match.id}:`,
                   error,
                 );
                 return {
@@ -212,7 +199,7 @@ export class SeriesCronService {
       return seriesWithMatchesAndOdds;
     } catch (error) {
       console.error(
-        `[SeriesCron] ❌ Failed to fetch fresh data for ${eventTypeId}:`,
+        `[SeriesService] ❌ Failed to fetch fresh data for ${eventTypeId}:`,
         error,
       );
       return [];
@@ -221,4 +208,4 @@ export class SeriesCronService {
 }
 
 // Create singleton instance
-export const seriesCronService = new SeriesCronService();
+export const seriesService = new SeriesService();

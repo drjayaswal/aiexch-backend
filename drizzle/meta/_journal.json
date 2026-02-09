@@ -176,6 +176,20 @@
       "when": 1764072597626,
       "tag": "0024_lumpy_gabe_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1770628710833,
+      "tag": "0025_broken_shinobi_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1770629977618,
+      "tag": "0026_yummy_trauma",
+      "breakpoints": true
     }
   ]
 }

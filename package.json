@@ -28,6 +28,7 @@
     "bcryptjs": "^3.0.3",
     "bull": "^4.16.5",
     "dotenv": "^17.2.2",
+    "drizzle-kit": "^0.31.9",
     "drizzle-orm": "^0.44.5",
     "elysia": "^1.4.5",
     "jsonwebtoken": "^9.0.2",
@@ -36,6 +37,7 @@
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "redis": "^4.7.1",
+    "socket.io": "^4.8.3",
     "ws": "^8.18.3"
   },
   "devDependencies": {
@@ -45,7 +47,6 @@
     "@types/node": "^20.19.15",
     "@types/redis": "^4.0.11",
     "@types/uuid": "^10.0.0",
-    "drizzle-kit": "^0.31.4",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }

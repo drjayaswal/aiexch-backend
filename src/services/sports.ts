@@ -11,17 +11,17 @@ import {
 } from "../types/sports/lists";
 import { MatchResult } from "../types/sports/results";
 import { CacheService } from "./cache";
-import dummysports from "../dummy/sportsevents.json"
+import dummysports from "../dummy/sportsevents.json";
 import seriesData from "../dummy/series.json";
 import matchesData from "../dummy/matches.json";
 import marketData from "../dummy/getMarkets.json";
 import IndividualMarketData from "../dummy/getMarketByMarketId.json";
-import odds from "../dummy/odds.json"
+import odds from "../dummy/odds.json";
+import { getIO } from "./socket-service";
 
 type OddsObject = {
   [key: string]: any;
 };
-
 
 const api = axios.create({
   baseURL: process.env.SPORTS_GAME_PROVIDER_BASE_URL || "http://100.30.62.142",
@@ -44,32 +44,182 @@ export const SportsService = {
     }
   },
 
+  async getSeriesWithMatches(eventTypeId: string): Promise<any[]> {
+    // Cache key for this method
+    const cacheKey = `sports:seriesWithMatches:${eventTypeId}`;
+
+    try {
+      console.log(
+        `[SeriesCron] Fetching series with matches for eventTypeId: ${eventTypeId}`,
+      );
+
+      // Try to get from cache first (shorter TTL for this layer)
+      const cachedSeries = await CacheService.get<any[]>(cacheKey);
+      if (cachedSeries && cachedSeries.length > 0) {
+        console.log(`[SeriesCron] Cache HIT for ${cacheKey}`);
+        return cachedSeries;
+      }
+
+      console.log(`[SeriesCron] Cache MISS for ${cacheKey}`);
+
+      const seriesList = await SportsService.getSeriesList({
+        eventTypeId: eventTypeId,
+      });
+
+      if (seriesList.length === 0) {
+        console.log(
+          `[SeriesCron] No series found for eventTypeId: ${eventTypeId}`,
+        );
+        // Cache empty result too (shorter TTL for empty results)
+        await CacheService.set(cacheKey, [], 5 * 60 * 60); // 5 hours for empty
+        return [];
+      }
+
+      // Process each series to get matches
+      const seriesPromises = seriesList.map(async (series: any) => {
+        try {
+          // Cache key for individual series matches
+          const seriesCacheKey = `sports:seriesMatches:${eventTypeId}:${series.competition.id}`;
+
+          // Try cache for individual series
+          const cachedMatches = await CacheService.get<any[]>(seriesCacheKey);
+          if (cachedMatches && cachedMatches.length > 0) {
+            console.log(
+              `[SeriesCron] Cache HIT for series ${series.competition.id}`,
+            );
+            return {
+              id: series.competition.id,
+              name: series.competition.name,
+              eventTypeId: eventTypeId,
+              matches: cachedMatches,
+            };
+          }
+
+          const matchData = await SportsService.getMatchList({
+            eventTypeId: eventTypeId,
+            competitionId: series.competition.id,
+          });
+
+          let matches = [];
+          if (matchData && Array.isArray(matchData)) {
+            matches = matchData;
+          }
+
+          // Filter and format valid matches
+          const validMatches = matches
+            .filter((match: any) => match && match.id)
+            .map((match: any) => {
+              if (match.id && match.name) {
+                return {
+                  id: match.id,
+                  name: match.name,
+                  openDate: match.openDate || null,
+                  status: match.status || "UNKNOWN",
+                };
+              } else if (match.event && match.event.id) {
+                return {
+                  id: match.event.id,
+                  name: match.event.name || "Unknown Match",
+                  openDate: match.event.openDate || null,
+                  status: match.status || "UNKNOWN",
+                };
+              }
+              return null;
+            })
+            .filter(Boolean);
+
+          // Cache individual series matches for 60 seconds
+          if (validMatches.length > 0) {
+            await CacheService.set(seriesCacheKey, validMatches, 60);
+          }
+
+          // Only return series that have matches
+          if (validMatches.length > 0) {
+            return {
+              id: series.competition.id,
+              name: series.competition.name,
+              eventTypeId: eventTypeId,
+              matches: validMatches,
+            };
+          }
+
+          return null; // Return null for series without matches
+        } catch (error) {
+          console.error(
+            `[SeriesCron] Error getting matches for series ${series.competition?.id}:`,
+            error,
+          );
+          return null; // Return null for failed series
+        }
+      });
+
+      // Wait for all promises and filter out null values
+      const allSeries = await Promise.all(seriesPromises);
+      const seriesWithMatches = allSeries.filter(Boolean);
+
+      console.log(
+        `[SeriesCron] Found ${seriesWithMatches.length}/${seriesList.length} series with matches for ${eventTypeId}`,
+      );
+
+      // Cache the final result for 45 seconds
+      if (seriesWithMatches.length > 0) {
+        await CacheService.set(cacheKey, seriesWithMatches, 45);
+      } else {
+        // Cache empty result for 30 seconds
+        await CacheService.set(cacheKey, [], 30);
+      }
+
+      return seriesWithMatches;
+    } catch (error) {
+      console.error(
+        `[SeriesCron] ❌ Failed to fetch series with matches for ${eventTypeId}:`,
+        error,
+      );
+      // Return empty array on error, don't cache errors
+      return [];
+    }
+  },
   async getOdds({
-    eventTypeId,
     marketId,
   }: {
-    eventTypeId: string;
     marketId: string | string[];
   }) {
     const marketIdArray = Array.isArray(marketId) ? marketId : [marketId];
-    const chunks = [];
+    console.log("marketId",marketIdArray)
+
+    const chunks: string[][] = [];
     for (let i = 0; i < marketIdArray.length; i += 30) {
       chunks.push(marketIdArray.slice(i, i + 30));
     }
 
     try {
-      // const results = await Promise.all(
-      //   chunks.map(async (chunk) => {
-      //     const marketIds = chunk.join(",");
+      const results = await Promise.all(
+        chunks.map(async (chunk) => {
+          // If API supports multiple IDs as comma-separated
+          const marketIds = chunk.join(",");
 
-      //   })
-      // );
+          const response = await axios.get(
+            `${process.env.SPORTS_GAME_PROVIDER_BASE_URL}/sports/books/${marketIds}`,
+          );
+
+         console.log("oddd",JSON.stringify(response.data, null, 2));
+
+          return response.data;
+        }),
+      );
+
+      // console.log("resuu",results)
+
+      // Merge all chunk responses into one object
+      const odds = Object.assign({}, ...results);
+
       return odds;
     } catch (error) {
-      // console.error("getOdds error:");
+      console.error("getOdds error:", error);
       return [];
     }
   },
+
   async getBookmarkOdds({
     eventTypeId,
     marketId,
@@ -321,14 +471,17 @@ export const SportsService = {
     const cacheKey = `series:${eventTypeId}`;
     try {
       console.log("Fetching series list for eventType:", eventTypeId);
+      const response = await axios.get(
+        `${process.env.SPORTS_GAME_PROVIDER_BASE_URL}/sports/competitions/list/${eventTypeId}`,
+      );
+      console.log("series",response)
 
       // const cached = await CacheService.get<CompetitionItem[]>(cacheKey);
       // if (Array.isArray(cached) && cached.length > 0) {
       //   return cached;
       // }
 
-    
-      const data = validateArray<any>(seriesData);
+      const data = validateArray<any>(response.data);
 
       // Only cache if data is not empty
       // if (data && data.length > 0) {
@@ -354,10 +507,14 @@ export const SportsService = {
   }) {
     const cacheKey = `matches:${eventTypeId}:${competitionId}`;
     try {
-      const cached = await CacheService.get<MatchItem[]>(cacheKey);
-      if (cached) return cached;
+      // const cached = await CacheService.get<MatchItem[]>(cacheKey);
+      // if (cached) return cached;
+      const response = await axios.get(
+        `${process.env.SPORTS_GAME_PROVIDER_BASE_URL}/sports/competitions/${competitionId}`,
+      );
+      console.log("match",response)
 
-      const data = validateArray<any>(matchesData.events);
+      const data = validateArray<any>(response.data.events);
 
       await CacheService.set(cacheKey, data, 2 * 60 * 60); // 2 hours
       return data;
@@ -368,23 +525,31 @@ export const SportsService = {
   },
 
   async getMarkets({
-    eventTypeId,
     eventId,
   }: {
-    eventTypeId: string;
     eventId: string;
   }) {
-    const cacheKey = `markets:${eventTypeId}:${eventId}`;
+    const cacheKey = `markets:${eventId}`;
+
     try {
-      // const cached = await CacheService.get<MarketItem[]>(cacheKey);
-      // if (cached) return cached;
+      const response = await axios.get(
+        `${process.env.SPORTS_GAME_PROVIDER_BASE_URL}/sports/events/${eventId}`,
+      );
 
-      const data = validateArray<MarketItem>(marketData.catalogues);
+      const catalogues = Array.isArray(response.data?.catalogues)
+        ? response.data.catalogues
+        : [];
 
-      await CacheService.set(cacheKey, data, 4 * 60 * 60); // 4 hours
+      if (catalogues.length === 0) {
+        console.log(`[getMarkets] No markets yet for event ${eventId}`);
+      }
+
+      const data = validateArray<MarketItem>(catalogues);
+
+      await CacheService.set(cacheKey, data, 4 * 60 * 60);
       return data;
     } catch (error) {
-      console.error("getMarkets error:");
+      console.error("getMarkets error:", error);
       return [];
     }
   },
@@ -413,54 +578,85 @@ export const SportsService = {
       return [];
     }
   },
-  async getMarketsWithOdds({
-    eventTypeId,
-    eventId,
-  }: {
-    eventTypeId: string;
-    eventId: string;
-  }) {
-    try {
-      const markets = await this.getMarkets({ eventTypeId, eventId });
-
-      if (!markets || markets.length === 0) {
-        return [];
-      }
-
-      const marketIds = markets
-        .map((market) => market.marketId)
-        .filter(Boolean);
-
-      if (marketIds.length === 0) {
-        return markets;
-      }
-
-      const oddsObject: OddsObject = await this.getOdds({
-        eventTypeId,
-        marketId: marketIds,
-      });
-
-      const marketsWithOdds = markets.map((market) => {
-        // ⚡ Here is the key change
-        const marketOdds = oddsObject[market.marketId];
-
-        return {
-          ...market,
-          odds: marketOdds || null,
-        };
-      });
-
-      // Sort by sr_no field
-      return marketsWithOdds.sort((a, b) => {
-        const aSrNo = (a as any).sr_no || 0;
-        const bSrNo = (b as any).sr_no || 0;
-        return aSrNo - bSrNo;
-      });
-    } catch (error) {
-      console.error("WithOdds error:");
+  
+ async getMarketsWithOdds({ eventId }: { eventId: string }) {
+  try {
+    console.log("Fetching markets for event:", eventId);
+    
+    // STEP 1: Get ALL markets
+    const allMarkets = await this.getMarkets({ eventId });
+    
+    if (!allMarkets || allMarkets.length === 0) {
+      console.log("No markets found for event:", eventId);
       return [];
     }
-  },
+    
+    // STEP 2: Filter ONLY OPEN markets (critical optimization)
+    const openMarkets = allMarkets.filter(market => market.status === "OPEN");
+    
+    console.log(`Total markets: ${allMarkets.length}, Open markets: ${openMarkets.length}`);
+    
+    if (openMarkets.length === 0) {
+      console.log("No OPEN markets found");
+      return [];
+    }
+    
+    // STEP 3: Get odds ONLY for OPEN markets
+    const openMarketIds = openMarkets.map(m => m.marketId);
+    const oddsObject = await this.getOdds({ marketId: openMarketIds });
+    
+    // STEP 4: SIMPLE MERGE - Add odds to each open market
+    const marketsWithOdds = openMarkets.map(market => {
+      const marketOdds = oddsObject[market.marketId];
+      
+      return {
+        marketId: market.marketId,
+        marketName: market.marketName,
+        marketType: market.marketType,
+        status: market.status,
+        inPlay: market.inPlay,
+        bettingType: market.bettingType,
+        marketCondition: market.marketCondition,
+        runners: market.runners.map(runner => {
+          // Find matching odds for this runner
+          const oddsRunner = marketOdds?.runners?.find(
+            (or: any) => or.selectionId === runner.id
+          );
+          
+          return {
+            selectionId: runner.id,
+            name: runner.name,
+            status: oddsRunner?.status || null,
+            back: oddsRunner?.back?.[0] || null,  // First back price
+            lay: oddsRunner?.lay?.[0] || null     // First lay price
+          };
+        })
+      };
+    });
+
+    const io=getIO()
+   if (io) {
+     // Emit to specific event room
+     io.to(`event:${eventId}`).emit("market-update", {
+       eventId,
+       markets: marketsWithOdds,
+       timestamp: Date.now(),
+     });
+     console.log(`📡 Emitted market update for event: ${eventId}`);
+   } else {
+     console.log("⚠️ Socket.io not initialized, skipping emit");
+   }
+
+    console.log("marketWithOdds",marketsWithOdds)
+    
+    // STEP 5: Sort by sortPriority if available
+    return marketsWithOdds
+    
+  } catch (error) {
+    console.error("getMarketsWithOdds error:", error);
+    return [];
+  }
+},
   async getBookmakersWithOdds({
     eventTypeId,
     eventId,
