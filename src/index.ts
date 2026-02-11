@@ -34,7 +34,6 @@ initializeServices();
 
 const port = Number(process.env.PORT || 3001);
 
-
 // Temporarily allow all origins for development
 // Set ALLOW_ALL_ORIGINS=true in .env to enable this (works in production too)
 const allowAllOrigins =
@@ -78,6 +77,9 @@ const app = new Elysia()
     };
   })
 
+  .get("/", () => ({ message: "AIEXCH Backend API" }))
+  .get("/health", () => ({ status: "OK" }))
+
   .use(seriesRoutes)
   .use(authRoutes)
   .use(profileRoutes)
@@ -85,45 +87,32 @@ const app = new Elysia()
   .use(gamesRoutes)
   .use(publicRoutes)
   .use(sportsRoutes)
-  .use(sportsWebSocketRoutes)
   .use(bettingRoutes)
   .use(casinoAggregatorRoutes)
   .use(casinoCallbackRoutes)
   .use(casinoGamesRoutes)
-  .get("/", () => ({ message: "AIEXCH Backend API" }))
-  .get("/health", () => ({ status: "OK" }))
-  .get("/debug-test", () => {
-    console.log("=== DEBUG TEST ENDPOINT CALLED ===");
-    return {
-      message: "Debug test works!",
-      timestamp: new Date().toISOString(),
-    };
-  })
-  .all("/*", ({ request, set }) => {
-    // console.log("=== CATCH-ALL WILDCARD ===");
-    // console.log("Method:", request.method);
-    // console.log("URL:", request.url);
-    // console.log("Path:", new URL(request.url).pathname);
+  .use(sportsWebSocketRoutes)
+  .listen(port)
 
-    set.status = 404;
-    return {
-      message: "Route not found - caught by wildcard",
-      method: request.method,
-      url: request.url,
-      path: new URL(request.url).pathname,
-    };
-  });
+// .all("/*", ({ request, set }) => {
+//   // console.log("=== CATCH-ALL WILDCARD ===");
+//   // console.log("Method:", request.method);
+//   // console.log("URL:", request.url);
+//   // console.log("Path:", new URL(request.url).pathname);
+//
+//   set.status = 404;
+//   return {
+//     message: "Route not found - caught by wildcard",
+//     method: request.method,
+//     url: request.url,
+//     path: new URL(request.url).pathname,
+//   };
+// });
 
+console.log(`🚀 Server is running on http://localhost:${port}`);
+console.log(`📡 WebSocket support enabled`);
 
-
-// Bun has native WebSocket support, so we can use .listen() directly
-const server = app.listen(port, async () => {
-  console.log(`🚀 Server is running on http://localhost:${port}`);
-  console.log(`📡 WebSocket support enabled`);
-  // startCronJobs();
-});
 initSocket();
 MarketCronService.init();
-
 
 console.log(`🔌Socket server initialized`);

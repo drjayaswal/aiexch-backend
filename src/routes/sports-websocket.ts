@@ -15,9 +15,25 @@ export const sportsWebSocketRoutes = new Elysia({ prefix: "/sports" })
 
       sportsWebSocketManager.addClient(clientId, (data) => {
         try {
-          ws.send(data);
+          // WebSocket readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
+          if (ws.readyState === 1) {
+            ws.send(data);
+          } else {
+            console.warn(
+              `[WebSocket Route] Cannot send to client ${clientId}: WebSocket not open (state: ${ws.readyState})`
+            );
+            // Remove client if connection is closed
+            if (ws.readyState === 3 || ws.readyState === 2) {
+              sportsWebSocketManager.removeClient(clientId);
+            }
+          }
         } catch (error) {
-          throw error;
+          console.error(
+            `[WebSocket Route] Error sending to client ${clientId}:`,
+            error
+          );
+          // Remove client on send error
+          sportsWebSocketManager.removeClient(clientId);
         }
       });
 
@@ -37,11 +53,25 @@ export const sportsWebSocketRoutes = new Elysia({ prefix: "/sports" })
           clientIdMap.set(ws, finalClientId);
           sportsWebSocketManager.addClient(finalClientId, (data) => {
             try {
-              ws.send(data);
+              // WebSocket readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
+              if (ws.readyState === 1) {
+                ws.send(data);
+              } else {
+                console.warn(
+                  `[WebSocket Route] Cannot send to client ${finalClientId}: WebSocket not open (state: ${ws.readyState})`
+                );
+                // Remove client if connection is closed
+                if (ws.readyState === 3 || ws.readyState === 2) {
+                  sportsWebSocketManager.removeClient(finalClientId);
+                }
+              }
             } catch (error) {
               console.error(
-                "[WebSocket Route] Error sending WebSocket message:",
+                `[WebSocket Route] Error sending to client ${finalClientId}:`,
+                error
               );
+              // Remove client on send error
+              sportsWebSocketManager.removeClient(finalClientId);
             }
           });
         }
@@ -137,10 +167,25 @@ export const sportsWebSocketRoutes = new Elysia({ prefix: "/sports" })
       clientIdMap.set(ws, clientId);
       sportsWebSocketManager.addClient(clientId, (data) => {
         try {
-          ws.send(data);
+          // WebSocket readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
+          if (ws.readyState === 1) {
+            ws.send(data);
+          } else {
+            console.warn(
+              `[WebSocket Route] Cannot send to legacy client ${clientId}: WebSocket not open (state: ${ws.readyState})`
+            );
+            // Remove client if connection is closed
+            if (ws.readyState === 3 || ws.readyState === 2) {
+              sportsWebSocketManager.removeClient(clientId);
+            }
+          }
         } catch (error) {
-          console.error(`[WebSocket Route] Legacy send failed for ${clientId}:`);
-          throw error;
+          console.error(
+            `[WebSocket Route] Error sending to legacy client ${clientId}:`,
+            error
+          );
+          // Remove client on send error
+          sportsWebSocketManager.removeClient(clientId);
         }
       });
 

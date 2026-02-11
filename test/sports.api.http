@@ -41,3 +41,8 @@ GET https://api.aiexch.com/sports-proxy/sports/competitions/list/4 HTTP/1.1
 ### 
 
 GET https://api.aiexch.com/sports-proxy/sports/books/1.253646978 HTTP/1.1
+
+
+### 
+
+WS ws://100.30.62.142:3001/ws 

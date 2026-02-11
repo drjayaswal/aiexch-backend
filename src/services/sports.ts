@@ -609,7 +609,7 @@ export const SportsService = {
       await CacheService.set(cacheKey, data, 4 * 60 * 60);
       return data;
     } catch (error) {
-      console.error("getMarkets error:", error);
+      // console.error("getMarkets error:", error);
       return [];
     }
   },
