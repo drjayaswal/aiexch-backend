@@ -18,6 +18,9 @@ import marketData from "../dummy/getMarkets.json";
 import IndividualMarketData from "../dummy/getMarketByMarketId.json";
 import odds from "../dummy/odds.json";
 import { getIO } from "./socket-service";
+import { and, eq } from "drizzle-orm";
+import { competitions } from "@db/schema";
+import { db } from "@db/index";
 
 type OddsObject = {
   [key: string]: any;
@@ -44,141 +47,161 @@ export const SportsService = {
     }
   },
 
-  async getSeriesWithMatches(eventTypeId: string): Promise<any[]> {
-    // Cache key for this method
-    const cacheKey = `sports:seriesWithMatches:${eventTypeId}`;
+async getSeriesWithMatches(eventTypeId: string): Promise<any[]> {
+  // Cache key for this method
+  const cacheKey = `sports:seriesWithMatches:${eventTypeId}`;
 
-    try {
-      console.log(
-        `[SeriesCron] Fetching series with matches for eventTypeId: ${eventTypeId}`,
-      );
+  try {
+    // ✅ Step 1: MAIN CACHE CHECK (First Level)
+    const mainCachedData = await CacheService.get<any[]>(cacheKey);
+    if (mainCachedData) {
+      console.log(`[SeriesCron] MAIN CACHE HIT for ${cacheKey}`);
+      return mainCachedData;
+    }
 
-      // Try to get from cache first (shorter TTL for this layer)
-      const cachedSeries = await CacheService.get<any[]>(cacheKey);
-      if (cachedSeries && cachedSeries.length > 0) {
-        console.log(`[SeriesCron] Cache HIT for ${cacheKey}`);
-        return cachedSeries;
-      }
+    console.log(`[SeriesCron] MAIN CACHE MISS for ${cacheKey}`);
+    console.log(`[SeriesCron] Fetching fresh data for eventTypeId: ${eventTypeId}`);
 
-      console.log(`[SeriesCron] Cache MISS for ${cacheKey}`);
+    // ✅ Step 2: Fetch Series List
+    const seriesList = await SportsService.getSeriesList({
+      eventTypeId: eventTypeId,
+    });
 
-      const seriesList = await SportsService.getSeriesList({
-        eventTypeId: eventTypeId,
-      });
+    console.log(`[SeriesCron] Processing ${seriesList.length} series`);
 
-      if (seriesList.length === 0) {
-        console.log(
-          `[SeriesCron] No series found for eventTypeId: ${eventTypeId}`,
-        );
-        // Cache empty result too (shorter TTL for empty results)
-        await CacheService.set(cacheKey, [], 5 * 60 * 60); // 5 hours for empty
-        return [];
-      }
+    // ✅ Step 3: Process each series (with cache for individual series)
+    const seriesPromises = seriesList.map(async (series: any) => {
+      try {
+        const seriesId = series.id || series.competition_id;
+        const seriesCacheKey = `sports:seriesMatches:${eventTypeId}:${seriesId}`;
 
-      // Process each series to get matches
-      const seriesPromises = seriesList.map(async (series: any) => {
-        try {
-          // Cache key for individual series matches
-          const seriesCacheKey = `sports:seriesMatches:${eventTypeId}:${series.competition.id}`;
-
-          // Try cache for individual series
-          const cachedMatches = await CacheService.get<any[]>(seriesCacheKey);
-          if (cachedMatches && cachedMatches.length > 0) {
-            console.log(
-              `[SeriesCron] Cache HIT for series ${series.competition.id}`,
-            );
-            return {
-              id: series.competition.id,
-              name: series.competition.name,
-              eventTypeId: eventTypeId,
-              matches: cachedMatches,
-            };
-          }
-
-          const matchData = await SportsService.getMatchList({
+        // ✅ Step 4: SERIES-LEVEL CACHE CHECK (Second Level)
+        const seriesCachedData = await CacheService.get<any[]>(seriesCacheKey);
+        if (seriesCachedData) {
+          console.log(`[SeriesCron] SERIES CACHE HIT for ${seriesId}`);
+          return {
+            id: seriesId,
+            name: series.name || series.competition?.name || "Unknown Series",
             eventTypeId: eventTypeId,
-            competitionId: series.competition.id,
+            matches: seriesCachedData,
+          };
+        }
+
+        console.log(`[SeriesCron] SERIES CACHE MISS for ${seriesId}, fetching matches...`);
+
+        // ✅ Step 5: Fetch Matches for this series
+        const matchData = await SportsService.getMatchList({
+          eventTypeId: eventTypeId,
+          competitionId: seriesId,
+        });
+
+        let matches = [];
+        if (matchData && Array.isArray(matchData)) {
+          matches = matchData;
+        }
+
+        // ✅ Step 6: Process each match (NO MARKET CACHING - Fresh fetch always)
+        const validMatchesPromises = matches
+          .filter((match: any) => match && match.id)
+          .map(async (match: any) => {
+            try {
+              const matchId = match.id || match.event?.id;
+              const matchName = match.name || match.event?.name || "Unknown Match";
+              const openDate = match.openDate || match.event?.openDate || null;
+              const status = match.status || "UNKNOWN";
+
+              console.log(`[SeriesCron] Fetching FRESH markets for match ${matchId}`);
+
+              // ✅ Step 7: ALWAYS FETCH FRESH MARKET DATA (No cache check)
+              const markets = await SportsService.getMarkets({
+                eventId: matchId,
+              });
+
+              // ✅ Step 8: Calculate inPlay from fresh markets
+              let inPlay = false;
+              if (markets && markets.length > 0) {
+                inPlay = markets.some((market: any) => market.inPlay === true);
+                console.log(`[SeriesCron] Match ${matchId} - inPlay: ${inPlay} (from ${markets.length} markets)`);
+              }
+
+              return {
+                id: matchId,
+                name: matchName,
+                openDate: openDate,
+                status: status,
+                inPlay: inPlay, // Fresh inPlay status
+              };
+            } catch (error) {
+              console.error(
+                `[SeriesCron] Error fetching markets for match ${match?.id || 'unknown'}:`,
+                error,
+              );
+              return {
+                id: match.id || match.event?.id,
+                name: match.name || match.event?.name || "Unknown Match",
+                openDate: match.openDate || match.event?.openDate || null,
+                status: match.status || "UNKNOWN",
+                inPlay: false, // Default to false on error
+              };
+            }
           });
 
-          let matches = [];
-          if (matchData && Array.isArray(matchData)) {
-            matches = matchData;
-          }
+        // ✅ Step 9: Wait for all matches processing
+        const validMatches = (await Promise.all(validMatchesPromises))
+          .filter(Boolean);
 
-          // Filter and format valid matches
-          const validMatches = matches
-            .filter((match: any) => match && match.id)
-            .map((match: any) => {
-              if (match.id && match.name) {
-                return {
-                  id: match.id,
-                  name: match.name,
-                  openDate: match.openDate || null,
-                  status: match.status || "UNKNOWN",
-                };
-              } else if (match.event && match.event.id) {
-                return {
-                  id: match.event.id,
-                  name: match.event.name || "Unknown Match",
-                  openDate: match.event.openDate || null,
-                  status: match.status || "UNKNOWN",
-                };
-              }
-              return null;
-            })
-            .filter(Boolean);
-
-          // Cache individual series matches for 60 seconds
-          if (validMatches.length > 0) {
-            await CacheService.set(seriesCacheKey, validMatches, 60);
-          }
-
-          // Only return series that have matches
-          if (validMatches.length > 0) {
-            return {
-              id: series.competition.id,
-              name: series.competition.name,
-              eventTypeId: eventTypeId,
-              matches: validMatches,
-            };
-          }
-
-          return null; // Return null for series without matches
-        } catch (error) {
-          console.error(
-            `[SeriesCron] Error getting matches for series ${series.competition?.id}:`,
-            error,
-          );
-          return null; // Return null for failed series
+        // ✅ Step 10: CACHE SERIES MATCHES (60 seconds)
+        if (validMatches.length > 0) {
+          await CacheService.set(seriesCacheKey, validMatches, 60);
+          console.log(`[SeriesCron] Cached ${validMatches.length} matches for series ${seriesId}`);
         }
-      });
 
-      // Wait for all promises and filter out null values
-      const allSeries = await Promise.all(seriesPromises);
-      const seriesWithMatches = allSeries.filter(Boolean);
+        // Only return series that have matches
+        if (validMatches.length > 0) {
+          return {
+            id: seriesId,
+            name: series.name || series.competition?.name || "Unknown Series",
+            eventTypeId: eventTypeId,
+            matches: validMatches,
+          };
+        }
 
-      console.log(
-        `[SeriesCron] Found ${seriesWithMatches.length}/${seriesList.length} series with matches for ${eventTypeId}`,
-      );
-
-      // Cache the final result for 45 seconds
-      if (seriesWithMatches.length > 0) {
-        await CacheService.set(cacheKey, seriesWithMatches, 45);
-      } else {
-        // Cache empty result for 30 seconds
-        await CacheService.set(cacheKey, [], 30);
+        return null;
+      } catch (error) {
+        console.error(
+          `[SeriesCron] Error getting matches for series ${series?.id || 'unknown'}:`,
+          error,
+        );
+        return null;
       }
+    });
 
-      return seriesWithMatches;
-    } catch (error) {
-      console.error(
-        `[SeriesCron] ❌ Failed to fetch series with matches for ${eventTypeId}:`,
-        error,
-      );
-      // Return empty array on error, don't cache errors
-      return [];
+    // ✅ Step 11: Wait for all series processing
+    const allSeries = await Promise.all(seriesPromises);
+    const seriesWithMatches = allSeries.filter(Boolean);
+
+    console.log(
+      `[SeriesCron] Found ${seriesWithMatches.length}/${seriesList.length} series with matches for ${eventTypeId}`,
+    );
+
+    // ✅ Step 12: CACHE FINAL RESULT (45 seconds)
+    if (seriesWithMatches.length > 0) {
+      await CacheService.set(cacheKey, seriesWithMatches, 45);
+      console.log(`[SeriesCron] Cached final result for ${eventTypeId}`);
+    } else {
+      await CacheService.set(cacheKey, [], 30);
+      console.log(`[SeriesCron] Cached empty result for ${eventTypeId}`);
     }
-  },
+
+    return seriesWithMatches;
+  } catch (error) {
+    console.error(
+      `[SeriesCron] ❌ Failed to fetch series with matches for ${eventTypeId}:`,
+      error,
+    );
+    return [];
+  }
+},
   async getOdds({
     marketId,
   }: {
@@ -467,37 +490,75 @@ export const SportsService = {
     }
   },
 
-  async getSeriesList({ eventTypeId }: { eventTypeId: string }) {
-    const cacheKey = `series:${eventTypeId}`;
-    try {
-      console.log("Fetching series list for eventType:", eventTypeId);
-      const response = await axios.get(
-        `${process.env.SPORTS_GAME_PROVIDER_BASE_URL}/sports/competitions/list/${eventTypeId}`,
-      );
-      console.log("series",response)
-
-      // const cached = await CacheService.get<CompetitionItem[]>(cacheKey);
-      // if (Array.isArray(cached) && cached.length > 0) {
-      //   return cached;
-      // }
-
-      const data = validateArray<any>(response.data);
-
-      // Only cache if data is not empty
-      // if (data && data.length > 0) {
-      //   console.log("Caching series data, count:", data.length);
-      //   // await CacheService.set(cacheKey, data, 3 * 60 * 60); // 3 hours
-      // } else {
-      //   console.log("No data to cache, returning empty array");
-      // }
-
-      return data || [];
-    } catch (error: any) {
-      console.error("DEBUG - getSeriesList error:", error);
-      return [];
+async getSeriesList({ eventTypeId }: { eventTypeId: string }) {
+  const cacheKey = `series:${eventTypeId}`;
+  try {
+    console.log("Fetching active series list from database for eventType:", eventTypeId);
+    
+    // Try to get from cache first
+    const cached = await CacheService.get<any[]>(cacheKey);
+    if (Array.isArray(cached) && cached.length > 0) {
+      console.log("Returning cached series data");
+      return cached;
     }
-  },
 
+    // Get active competitions from database where sport_id = eventTypeId and is_active = true
+    const activeCompetitions = await db
+      .select({
+        id: competitions.id,
+        competition_id: competitions.competition_id,
+        name: competitions.name,
+        sport_id: competitions.sport_id,
+        provider: competitions.provider,
+        is_active: competitions.is_active,
+        metadata: competitions.metadata,
+        created_at: competitions.created_at,
+        updated_at: competitions.updated_at
+      })
+      .from(competitions)
+      .where(
+        and(
+          eq(competitions.sport_id, eventTypeId),
+          eq(competitions.is_active, true),
+        )
+      )
+      .orderBy(competitions.name); // Optional: sort by name
+
+    console.log(`Found ${activeCompetitions.length} active competitions in database for sport ${eventTypeId}`);
+
+    // Transform the data to match the expected format
+    const formattedData = activeCompetitions.map(comp => ({
+      id: comp.competition_id, // Use competition_id as the ID for external compatibility
+      name: comp.name,
+      sportId: comp.sport_id,
+      provider: comp.provider,
+      isActive: comp.is_active,
+      metadata: comp.metadata,
+      createdAt: comp.created_at,
+      updatedAt: comp.updated_at,
+      // Add any other fields your frontend expects
+      totalEvents: comp.metadata?.totalEvents || 0,
+      // Include the database id if needed
+      dbId: comp.id
+    }));
+
+    // Cache the results
+    if (formattedData.length > 0) {
+      console.log("Caching series data, count:", formattedData.length);
+      await CacheService.set(cacheKey, formattedData, 3 * 60 * 60); // 3 hours
+    } else {
+      console.log("No active competitions found in database");
+    }
+
+    return formattedData || [];
+  } catch (error: any) {
+    console.error("DEBUG - getSeriesList error:", error);
+    
+    // Fallback: Try to get data from cache if available
+  
+    return [];
+  }
+},
   async getMatchList({
     eventTypeId,
     competitionId,
@@ -604,6 +665,7 @@ export const SportsService = {
     // STEP 3: Get odds ONLY for OPEN markets
     const openMarketIds = openMarkets.map(m => m.marketId);
     const oddsObject = await this.getOdds({ marketId: openMarketIds });
+    console.log("openmarkets",oddsObject)
     
     // STEP 4: SIMPLE MERGE - Add odds to each open market
     const marketsWithOdds = openMarkets.map(market => {

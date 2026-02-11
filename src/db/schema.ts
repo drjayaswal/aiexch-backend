@@ -13,7 +13,7 @@ import {
   PgTextBuilder,
   PgTable,
 } from "drizzle-orm/pg-core";
-import { generateNumericId } from "../utils/generateId";
+import { generateNumericId, generateNumericRandomId } from "../utils/generateId";
 
 export const users = pgTable("users", {
   id: bigint("id", { mode: "number" })
@@ -554,7 +554,7 @@ export const sports = pgTable("sports", {
 export const competitions = pgTable("competitions", {
   id: bigint("id", { mode: "number" })
     .primaryKey()
-    .$defaultFn(() => Number(generateNumericId())),
+    .$defaultFn(() => Number(generateNumericRandomId())),
   competition_id: varchar("competition_id", { length: 50 }).notNull().unique(),
   sport_id: varchar("sport_id", { length: 50 }).notNull(),
   name: varchar("name", { length: 200 }).notNull(),

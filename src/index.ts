@@ -19,6 +19,9 @@ import "dotenv/config";
 import { initSocket } from "@services/socket-service";
 import { MarketCronService } from "@services/market-cron-service";
 import { startCronJobs } from "@db/seed";
+import { gamesRoutes } from "@routes/dashboard/games-routes";
+import { competitions } from "@db/schema";
+import { db } from "./db";
 
 
 // // Initialize services
@@ -45,6 +48,7 @@ const app = new Elysia()
         ? true // Allow all origins - useful for local dev connecting to prod
         : [
             "http://localhost:3002",
+            "http://localhost:3000",
             "https://aiexch-two.vercel.app",
             "https://aiexch.com",
             "https://www.aiexch.com",
@@ -77,6 +81,7 @@ const app = new Elysia()
   .use(authRoutes)
   .use(profileRoutes)
   .use(adminRoutes)
+  .use(gamesRoutes)
   .use(publicRoutes)
   .use(sportsRoutes)
   .use(sportsWebSocketRoutes)
@@ -111,13 +116,12 @@ const app = new Elysia()
 
 
 // Bun has native WebSocket support, so we can use .listen() directly
-const server = app.listen(port, () => {
+const server = app.listen(port, async () => {
   console.log(`🚀 Server is running on http://localhost:${port}`);
   console.log(`📡 WebSocket support enabled`);
-  //  startCronJobs();
+  // startCronJobs();
 });
 initSocket();
-
 MarketCronService.init();
 
 

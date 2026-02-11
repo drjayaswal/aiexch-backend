@@ -2,182 +2,429 @@ import { db } from "./index";
 import { sports, competitions } from "./schema";
 import { eq } from "drizzle-orm";
 import cron from "node-cron";
-import { SportsService } from "@services/sports";
-import { getAvailableSportsList } from "@services/sports-service";
 
-// DB Operations (same as before)
+// API Configuration
+const API_BASE_URL = "https://api.aiexch.com/sports-proxy/sports";
+
+// Helper function for API calls
+const fetchApi = async (url: string) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching from ${url}:`, error);
+    throw error;
+  }
+};
+
+// Get sports from API
+const getSportsFromApi = async () => {
+  try {
+    console.log("🌐 Fetching sports from API...");
+    const data = await fetchApi(`${API_BASE_URL}/eventtypes`);
+
+    // Check response structure
+    console.log("API Response structure:", Object.keys(data));
+
+    // Handle different response formats
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data.data && Array.isArray(data.data)) {
+      return data.data;
+    } else if (data.eventTypes && Array.isArray(data.eventTypes)) {
+      return data.eventTypes;
+    } else {
+      console.error("Unknown API response format:", data);
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch sports from API:", error);
+    return [];
+  }
+};
+
+// Get competitions for a sport from API
+const getCompetitionsFromApi = async (sportId: string) => {
+  try {
+    console.log(`🌐 Fetching competitions for sport ID: ${sportId}...`);
+    const data = await fetchApi(`${API_BASE_URL}/competitions/list/${sportId}`);
+
+    // Check response structure
+    console.log(
+      `Competitions API response for sport ${sportId}:`,
+      Object.keys(data),
+    );
+
+    // Handle different response formats
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data.data && Array.isArray(data.data)) {
+      return data.data;
+    } else if (data.competitions && Array.isArray(data.competitions)) {
+      return data.competitions;
+    } else if (data.competition && Array.isArray(data.competition)) {
+      return data.competition;
+    } else {
+      console.error(
+        `Unknown competitions API response format for sport ${sportId}:`,
+        data,
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error(`Failed to fetch competitions for sport ${sportId}:`, error);
+    return [];
+  }
+};
+
+// DB Operations
 const upsertSport = async (sportData: any) => {
   try {
-    // ये देखो कि API से कौनसे fields आ रहे हैं
-    // console.log("Processing sport data:", sportData);
+    console.log("Processing sport data:", JSON.stringify(sportData, null, 2));
 
-    // सही field names use करो
-    const sportId = sportData.id || sportData.eventTypeId || sportData.sport_id;
-    const sportName = sportData.name || sportData.eventTypeName;
+    // Extract sport ID and name from different possible fields
+    const sportId =
+      sportData.id ||
+      sportData.eventTypeId ||
+      sportData.sport_id ||
+      sportData.eventType?.id;
+    const sportName =
+      sportData.name ||
+      sportData.eventTypeName ||
+      sportData.eventType?.name ||
+      "Unknown Sport";
 
-    if (!sportId || !sportName) {
-      console.log("❌ Skipping sport - missing ID or name:", sportData);
-      return;
+    if (!sportId) {
+      console.log("❌ Skipping sport - missing ID:", sportData);
+      return { operation: "skipped", reason: "missing_id" };
+    }
+
+    if (!sportName) {
+      console.log("⚠️ Sport has no name, using default:", sportId);
     }
 
     const existing = await db
       .select()
       .from(sports)
-      .where(eq(sports.sport_id, sportId))
+      .where(eq(sports.sport_id, String(sportId)))
       .limit(1);
 
+    const sportToSave = {
+      sport_id: String(sportId),
+      name: sportName,
+      is_active:  false, // Default to false
+      sort_order: sportData.sortOrder || sportData.sort_order || 0,
+      metadata: sportData.metadata || {},
+      updated_at: new Date(),
+    };
+
+    let operationType = "";
+
     if (existing.length > 0) {
-      return await db
+      await db
         .update(sports)
-        .set({
-          name: sportName,
-          updated_at: new Date(),
-        })
-        .where(eq(sports.sport_id, sportId));
+        .set(sportToSave)
+        .where(eq(sports.sport_id, String(sportId)));
+      operationType = "updated";
+      console.log(`📝 Updated sport: ${sportName} (ID: ${sportId})`);
+    } else {
+      await db.insert(sports).values({
+        ...sportToSave,
+        created_at: new Date(),
+      });
+      operationType = "added";
+      console.log(`✅ Added new sport: ${sportName} (ID: ${sportId})`);
     }
 
-    return await db.insert(sports).values({
-      sport_id: sportId,
-      name: sportName,
-      is_active: true,
-      sort_order: sportData.sortOrder || 0,
-    });
+    return { operation: operationType, sportId: String(sportId), sportName };
   } catch (error) {
-    console.error("Error upserting sport:", error);
+    console.error("Error upserting sport:", error, sportData);
+    return { operation: "error", error: error.message };
   }
 };
 
 const upsertCompetition = async (compData: any, sportId: string) => {
   try {
-    // // DEBUG: देखो क्या structure है
-    // console.log(
-    //   "Processing competition data:",
-    //   JSON.stringify(compData, null, 2),
-    // );
-
-    // Nested structure से data निकालो
+    // Extract competition data from different possible structures
     const competition = compData.competition || compData;
-    const compId = competition.id || compData.competitionId;
+
+    const compId = competition.id || compData.competitionId || compData.id;
     const compName =
-      competition.name || compData.name || compData.competitionName;
+      competition.name ||
+      compData.name ||
+      compData.competitionName ||
+      "Unknown Competition";
     const provider = competition.provider || compData.provider || "BETFAIR";
 
-    console.log(
-      `Extracted: id=${compId}, name=${compName}, provider=${provider}`,
-    );
-
-    if (!compId || !compName) {
-      console.log("❌ Skipping competition - missing ID or name:", compData);
-      return;
+    if (!compId) {
+      console.log("❌ Skipping competition - missing ID:", compData);
+      return { operation: "skipped", reason: "missing_id" };
     }
 
+    // ✅ PEHLE CHECK KARO KI COMPETITION EXIST KARTA HAI YA NAHI
     const existing = await db
       .select()
       .from(competitions)
-      .where(eq(competitions.competition_id, compId))
+      .where(eq(competitions.competition_id, String(compId)))
       .limit(1);
 
-    const data = {
-      competition_id: compId,
-      sport_id: sportId, // ये function parameter से आ रहा है
-      name: compName,
-      provider: provider,
-      is_active: false, // API से isActive use करो
-      is_archived: compData.isArchived || false,
-      metadata: compData.metadata || {},
-    };
-
+    // ✅ AGAR PEHLE SE EXIST KARTA HAI TO SKIP KARDO
     if (existing.length > 0) {
-      return await db
-        .update(competitions)
-        .set({
-          ...data,
-          updated_at: new Date(),
-        })
-        .where(eq(competitions.competition_id, compId));
+      console.log(
+        `⏭️ Skipping existing competition: ${compName} (ID: ${compId})`,
+      );
+      return {
+        operation: "skipped",
+        reason: "already_exists",
+        competitionId: String(compId),
+        competitionName: compName,
+      };
     }
 
-    return await db.insert(competitions).values(data);
+    // ✅ SIRF NEW COMPETITIONS KE LIYE ISSE AAGE BADHO
+    const isActive = false; // Default false
+    const metadata = competition.metadata || compData.metadata || {};
+
+    await db.insert(competitions).values({
+      competition_id: String(compId),
+      sport_id: sportId,
+      name: compName,
+      provider: provider,
+      is_active: isActive,
+      is_archived: competition.isArchived || compData.isArchived || false,
+      metadata: metadata,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    console.log(`✅ Added NEW competition: ${compName} (ID: ${compId})`);
+
+    return {
+      operation: "added",
+      competitionId: String(compId),
+      competitionName: compName,
+    };
   } catch (error) {
-    console.error("Error upserting competition:", error);
+    console.error("Error upserting competition:", error, compData);
+    return { operation: "error", error: error.message };
   }
 };
 
-// Sync Functions (UNCOMMENT THE FOR LOOPS!)
+// Sync Functions
 const syncSports = async () => {
-  console.log("🔄 Syncing sports...");
-  const sportsData = await getAvailableSportsList();
-//   console.log("sports", sportsData);
+  console.log("🚀 Starting sports sync...");
 
-  // IMPORTANT: UNCOMMENT THIS TO SAVE TO DB
-  for (const sport of sportsData) {
-    await upsertSport(sport);
+  try {
+    const sportsData = await getSportsFromApi();
+    console.log(`📥 Received ${sportsData.length} sports from API`);
+
+    let addedCount = 0;
+    let updatedCount = 0;
+    let errorCount = 0;
+
+    for (const sport of sportsData) {
+      const result = await upsertSport(sport);
+
+      if (result.operation === "added") {
+        addedCount++;
+      } else if (result.operation === "updated") {
+        updatedCount++;
+      } else if (result.operation === "error") {
+        errorCount++;
+      }
+    }
+
+    console.log("🎯 Sports sync completed!");
+    console.log(`   • Total processed: ${sportsData.length}`);
+    console.log(`   • Newly added: ${addedCount}`);
+    console.log(`   • Updated: ${updatedCount}`);
+    console.log(`   • Errors: ${errorCount}`);
+
+    return {
+      total: sportsData.length,
+      added: addedCount,
+      updated: updatedCount,
+      errors: errorCount,
+    };
+  } catch (error) {
+    console.error("❌ Sports sync failed:", error);
+    return { total: 0, added: 0, updated: 0, errors: 1 };
   }
-
-  console.log(`✅ Synced ${sportsData.length} sports`);
-  return sportsData;
 };
 
 const syncCompetitions = async () => {
-  console.log("🔄 Syncing competitions...");
+  console.log("🚀 Starting competitions sync...");
 
-  // Get all active sports from DB
-  const dbSports = await db
-    .select()
-    .from(sports)
-    .where(eq(sports.is_active, true));
-    console.log("dbSports",dbSports)
+  try {
+    // Get all active sports from DB
+    const dbSports = await db
+      .select()
+      .from(sports)
 
-  let totalCompetitions = 0;
+    console.log(`📊 Found ${dbSports.length} active sports in database`);
 
-  for (const sport of dbSports) {
-    const competitionsData = await SportsService.getSeriesList({
-      eventTypeId: sport.sport_id,
-    });
+    let totalCompetitions = 0;
+    let totalAdded = 0;
+    let totalUpdated = 0;
+    let totalErrors = 0;
+    const totalSports = dbSports.length;
 
-    // IMPORTANT: UNCOMMENT THIS TO SAVE TO DB
-    for (const comp of competitionsData) {
-      await upsertCompetition(comp, sport.sport_id);
+    for (let i = 0; i < dbSports.length; i++) {
+      const sport = dbSports[i];
+      const sportNumber = i + 1;
+
+      console.log(
+        `\n📊 Processing sport ${sportNumber}/${totalSports}: ${sport.name} (ID: ${sport.sport_id})`,
+      );
+
+      try {
+        const competitionsData = await getCompetitionsFromApi(sport.sport_id);
+        console.log(
+          `   📥 Received ${competitionsData.length} competitions from API`,
+        );
+
+        if (competitionsData.length === 0) {
+          console.log(`   ⚠️ No competitions found for ${sport.name}`);
+          continue;
+        }
+
+        let sportAdded = 0;
+        let sportUpdated = 0;
+        let sportErrors = 0;
+
+        for (const comp of competitionsData) {
+          const result = await upsertCompetition(comp, sport.sport_id);
+
+          if (result.operation === "added") {
+            sportAdded++;
+            totalAdded++;
+          } else if (result.operation === "updated") {
+            sportUpdated++;
+            totalUpdated++;
+          } else if (result.operation === "error") {
+            sportErrors++;
+            totalErrors++;
+          }
+        }
+
+        totalCompetitions += competitionsData.length;
+
+        // ✅ YEH WALA CONSOLE ADD KARNA HAI
+        console.log(`   ✅ Sport "${sport.name}" all competitions added!`);
+        console.log(
+          `      ↳ Total: ${competitionsData.length} | New: ${sportAdded} | Updated: ${sportUpdated} | Errors: ${sportErrors}`,
+        );
+      } catch (sportError) {
+        console.error(
+          `   ❌ Error processing sport ${sport.name}:`,
+          sportError,
+        );
+        totalErrors++;
+      }
     }
 
-    totalCompetitions += competitionsData.length;
-    console.log(`✅ ${sport.name}: ${competitionsData.length} competitions`);
-  }
+    // Final summary
+    console.log("\n🎯 ALL SPORTS SYNC COMPLETED!");
+    console.log("=".repeat(50));
+    console.log(`   • Total sports processed: ${totalSports}`);
+    console.log(`   • Total competitions processed: ${totalCompetitions}`);
+    console.log(`   • Newly added competitions: ${totalAdded}`);
+    console.log(`   • Updated competitions: ${totalUpdated}`);
+    console.log(`   • Total errors: ${totalErrors}`);
+    console.log("=".repeat(50));
 
-  console.log(`✅ Total: ${totalCompetitions} competitions synced`);
-  return totalCompetitions;
+    return {
+      totalSports,
+      totalCompetitions,
+      added: totalAdded,
+      updated: totalUpdated,
+      errors: totalErrors,
+    };
+  } catch (error) {
+    console.error("❌ Competitions sync failed:", error);
+    return {
+      totalSports: 0,
+      totalCompetitions: 0,
+      added: 0,
+      updated: 0,
+      errors: 1,
+    };
+  }
 };
 
 // Cron Jobs
-export const startCronJobs = () => {
+export const startCronJobs = async () => {
+  console.log("⏰ Setting up cron jobs...");
+
   // Sports: हर 24 घंटे में (midnight UTC)
-  cron.schedule("0 0 * * *", syncSports, {
-    timezone: "UTC",
-  });
+  cron.schedule(
+    "0 0 * * *",
+    () => {
+      console.log("⏰ Running scheduled sports sync...");
+      syncSports();
+    },
+    {
+      timezone: "UTC",
+    },
+  );
 
   // Competitions: हर 12 घंटे में
-  cron.schedule("0 */12 * * *", syncCompetitions, {
-    timezone: "UTC",
-  });
+  cron.schedule(
+    "0 */12 * * *",
+    () => {
+      console.log("⏰ Running scheduled competitions sync...");
+      syncCompetitions();
+    },
+    {
+      timezone: "UTC",
+    },
+  );
 
-  console.log("⏰ Cron jobs started:");
+  console.log("✅ Cron jobs started:");
   console.log("   • Sports sync: Daily at 00:00 UTC");
   console.log("   • Competitions sync: Every 12 hours");
 
-  // Optional: Server start होते ही एक बार चला दो
-  console.log("🚀 Running initial sync...");
-  setTimeout(async () => {
-    await syncSports();
-    await syncCompetitions();
-  }, 10000); // 10 seconds after server starts
+  // Run initial sync immediately
+  console.log("\n🚀 Running initial sync...");
+  console.log("-".repeat(40));
+  await syncSports();
+  console.log("-".repeat(40));
+  await syncCompetitions();
+  console.log("-".repeat(40));
+  console.log("✅ Initial sync completed!");
 };
 
 // Manual run functions
 export const runAll = async () => {
   console.log("🚀 Starting manual sync...");
+  console.log("=".repeat(50));
   await syncSports();
+  console.log("-".repeat(50));
   await syncCompetitions();
-  console.log("🎯 Manual sync completed");
+  console.log("=".repeat(50));
+  console.log("🎯 Manual sync completed!");
 };
+
+
+// File: sports-sync.ts (अंत में जोड़ें)
+
+// Manual execution
+if (import.meta.main) {
+  console.log("🔄 Manual execution started...");
+  
+  // सभी sync चलाएं
+  runAll().then(() => {
+    console.log("✅ Manual execution completed!");
+    process.exit(0);
+  }).catch((error) => {
+    console.error("❌ Manual execution failed:", error);
+    process.exit(1);
+  });
+}
 
 export { syncSports, syncCompetitions };
