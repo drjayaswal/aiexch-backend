@@ -4,18 +4,18 @@ export const cookieConfig = {
   accessToken: {
     httpOnly: true,
     // Only use secure cookies in production (HTTPS). Allow local HTTP during development.
-    secure: isProduction,
+    secure: true,
     sameSite: "none" as const,
     // Don't set domain for cross-origin cookies - let browser handle it
-    domain: undefined,
+    // domain: 'localhost',
     maxAge: 60 * 15, // 15 minutes
   },
   refreshToken: {
     httpOnly: true,
-    secure: isProduction,
+    secure: true,
     sameSite: "none" as const,
     // Don't set domain for cross-origin cookies - let browser handle it
-    domain: undefined,
+    // domain: 'localhost',
     maxAge: 60 * 60 * 24 * 7, // 7 days
   },
 };

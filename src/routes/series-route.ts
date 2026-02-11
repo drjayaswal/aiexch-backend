@@ -1,6 +1,6 @@
 // routes/series-route.ts
 import { Elysia, t } from "elysia";
-import { seriesService, SeriesService} from "../services/series-cron-service";
+import { seriesService, SeriesService } from "../services/series-cron-service";
 import { redis } from "@db/redis";
 import { param } from "drizzle-orm";
 import { SportsService } from "@services/sports";
@@ -15,7 +15,7 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     "/series/:eventTypeId",
     async ({ params }) => {
 
-       const { eventTypeId } = params;
+      const { eventTypeId } = params;
 
       //  console.log("hloooo")
       //  console.log("ppp",params)
@@ -24,27 +24,27 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
       try {
         const { eventTypeId } = params;
         const data = await seriesService.getSeriesData(eventTypeId);
-          if (!data || !Array.isArray(data) || data.length === 0) {
-            console.warn(
-              `[SeriesCron] Empty data received. Skipping cache for eventTypeId=${eventTypeId}`,
-            );
-            return {
-              success: true,
-              eventTypeId: eventTypeId,
-              data: data,
-              timestamp: new Date().toISOString(),
-              count: data.length,
-              message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
-            }; // return but don't cache
-          }
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          console.warn(
+            `[SeriesCron] Empty data received. Skipping cache for eventTypeId=${eventTypeId}`,
+          );
+          return {
+            success: true,
+            eventTypeId: eventTypeId,
+            data: data,
+            timestamp: new Date().toISOString(),
+            count: data.length,
+            message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
+          }; // return but don't cache
+        }
 
 
-          // await redis.set(cacheKey, JSON.stringify(data), { EX: 5*60 });
+        // await redis.set(cacheKey, JSON.stringify(data), { EX: 5*60 });
 
         return {
           success: true,
           eventTypeId: eventTypeId,
-          
+
           data: data,
           timestamp: new Date().toISOString(),
           count: data.length,
@@ -66,10 +66,10 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     },
   )
 
-  .get("/getMarketWithOdds/:eventId", async ({params}) => {
+  .get("/getMarketWithOdds/:eventId", async ({ params }) => {
     const { eventId } = params;
     try {
-      const data =await SportsService.getMarketsWithOdds({eventId})
+      const data = await SportsService.getMarketsWithOdds({ eventId })
       return {
         success: true,
         eventId,
@@ -85,33 +85,32 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     }
   })
 
-  .get("/getAllSeries/:eventTypeId", async ({params}) => {
+  .get("/getAllSeries/:eventTypeId", async ({ params }) => {
     const { eventTypeId } = params;
     const cacheKey = `series:withMatches:${eventTypeId}`;
     try {
-      console.log("yhaaa",eventTypeId)
 
       const cachedData = await CacheService.get<any[]>(cacheKey);
-       if (cachedData) {
-         console.log(`[API] Cache HIT for ${cacheKey}`);
-         return {
-           success: true,
-           eventTypeId: eventTypeId,
-           data: cachedData,
-           timestamp: new Date().toISOString(),
-           count: cachedData.length,
-           message: `Series data for eventType ${eventTypeId} (from cache)`,
-           cached: true,
-         };
-       }
+      if (cachedData) {
+        // console.log(`[API] Cache HIT for ${cacheKey}`);
+        return {
+          success: true,
+          eventTypeId: eventTypeId,
+          data: cachedData,
+          timestamp: new Date().toISOString(),
+          count: cachedData.length,
+          message: `Series data for eventType ${eventTypeId} (from cache)`,
+          cached: true,
+        };
+      }
 
-      
-        console.log(`[API] Cache MISS for ${cacheKey}, fetching fresh data...`);
+
+      // console.log(`[API] Cache MISS for ${cacheKey}, fetching fresh data...`);
       const allSeriesData =
         await SportsService.getSeriesWithMatches(eventTypeId);
-           if (allSeriesData.length > 0) {
-             await CacheService.set(cacheKey, allSeriesData, 5*60); // 5 minutes ttl
-           }
+      if (allSeriesData.length > 0) {
+        await CacheService.set(cacheKey, allSeriesData, 5 * 60); // 5 minutes ttl
+      }
 
       return {
         success: true,
@@ -131,10 +130,10 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
         data: [],
       };
     }
-    
+
   })
 
-  
+
   // Get available sports list
   .get("/sports-list", async () => {
     const sportsList = await getAvailableSportsList();

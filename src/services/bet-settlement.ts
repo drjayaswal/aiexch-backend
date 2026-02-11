@@ -165,7 +165,7 @@ async function settleMatchBets(
       // Get market IDs for this specific market type
       // Use default "odds" if marketType is null/undefined
       const effectiveMarketType = marketType || "odds";
-      
+
       const betsForMarketType = await db
         .select({ marketId: bets.marketId })
         .from(bets)
@@ -306,7 +306,7 @@ export async function checkAndSettleBets(): Promise<void> {
             group.marketTypes
           );
         } else {
-          console.log(`Match ${group.matchId} is still in progress`);
+          // console.log(`Match ${group.matchId} is still in progress`);
         }
       } catch (error) {
         console.error(`Error processing match group ${key}:`, error);

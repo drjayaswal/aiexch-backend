@@ -84,6 +84,7 @@ export const bettingRoutes = new Elysia({ prefix: "/betting" })
           .insert(bets)
           .values({
             userId: store.id,
+            eventTypeId: "4",
             matchId,
             marketId,
             selectionId,

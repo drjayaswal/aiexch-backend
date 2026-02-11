@@ -6,3 +6,38 @@ GET http://168.138.183.95/api/v2/getMarketsOdds?EventTypeID=4&marketId=1.2278861
 ### 
 
 GET http://168.138.183.95/api/v2/getSport HTTP/1.1
+
+
+### 
+
+GET http://100.30.62.142:3005/sports/eventtypes HTTP/1.1
+
+
+### 
+
+GET http://100.30.62.142/sport/getSport HTTP/1.1
+
+
+### 
+
+GET http://100.30.62.142:3005/getSport HTTP/1.1
+
+
+### 
+
+GET http://52.56.58.216:6008/sports/eventtypes HTTP/1.1
+
+
+### 
+
+GET https://api.aiexch.com/sports-proxy/sports/eventtypes HTTP/1.1
+
+
+### 
+
+GET https://api.aiexch.com/sports-proxy/sports/competitions/list/4 HTTP/1.1
+
+
+### 
+
+GET https://api.aiexch.com/sports-proxy/sports/books/1.253646978 HTTP/1.1
