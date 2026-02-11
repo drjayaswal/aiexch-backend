@@ -70,8 +70,10 @@ export const updateCompetitionsStatus = async (
     // ✅ IMPORTANT: Sirf series list cache clear karo
     const seriesCacheKey = `series:${sportId}`;
     const competitionsCacheKey =`dashboard-competitions:${sportId}`;
+    const seriesWithMatchesCacheKey = `series:withMatches:${sportId}`;
     await redis.del(seriesCacheKey);
     await redis.del(competitionsCacheKey);
+    await redis.del(seriesWithMatchesCacheKey);
 
     console.log(`✅ Cleared cache key: ${seriesCacheKey}`);
     console.log(`✅ Cleared cache key: ${competitionsCacheKey}`);

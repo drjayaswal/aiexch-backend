@@ -665,7 +665,6 @@ async getSeriesList({ eventTypeId }: { eventTypeId: string }) {
     // STEP 3: Get odds ONLY for OPEN markets
     const openMarketIds = openMarkets.map(m => m.marketId);
     const oddsObject = await this.getOdds({ marketId: openMarketIds });
-    console.log("openmarkets",oddsObject)
     
     // STEP 4: SIMPLE MERGE - Add odds to each open market
     const marketsWithOdds = openMarkets.map(market => {
@@ -709,7 +708,6 @@ async getSeriesList({ eventTypeId }: { eventTypeId: string }) {
      console.log("⚠️ Socket.io not initialized, skipping emit");
    }
 
-    console.log("marketWithOdds",marketsWithOdds)
     
     // STEP 5: Sort by sortPriority if available
     return marketsWithOdds
