@@ -1,6 +1,6 @@
 // routes/series-route.ts
 import { Elysia, t } from "elysia";
-import { seriesService, SeriesService } from "../services/series-cron-service";
+// import { seriesService, SeriesService } from "../services/series-cron-service";
 import { redis } from "@db/redis";
 import { param } from "drizzle-orm";
 import { SportsService } from "@services/sports";
@@ -11,60 +11,60 @@ import { getAvailableSportsList } from "@services/sports-service";
 
 export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
   // Get series for specific event type
-  .get(
-    "/series/:eventTypeId",
-    async ({ params }) => {
-
-      const { eventTypeId } = params;
-
-      //  console.log("hloooo")
-      //  console.log("ppp",params)
-      //  console.log("ttt",eventTypeId)
-
-      try {
-        const { eventTypeId } = params;
-        const data = await seriesService.getSeriesData(eventTypeId);
-        if (!data || !Array.isArray(data) || data.length === 0) {
-          console.warn(
-            `[SeriesCron] Empty data received. Skipping cache for eventTypeId=${eventTypeId}`,
-          );
-          return {
-            success: true,
-            eventTypeId: eventTypeId,
-            data: data,
-            timestamp: new Date().toISOString(),
-            count: data.length,
-            message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
-          }; // return but don't cache
-        }
-
-
-        // await redis.set(cacheKey, JSON.stringify(data), { EX: 5*60 });
-
-        return {
-          success: true,
-          eventTypeId: eventTypeId,
-
-          data: data,
-          timestamp: new Date().toISOString(),
-          count: data.length,
-          message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
-        };
-      } catch (error: any) {
-        return {
-          success: false,
-          eventTypeId: params.eventTypeId,
-          message: error.message || "Failed to fetch series data",
-          data: [],
-        };
-      }
-    },
-    {
-      params: t.Object({
-        eventTypeId: t.String(),
-      }),
-    },
-  )
+  // .get(
+  //   "/series/:eventTypeId",
+  //   async ({ params }) => {
+  //
+  //     const { eventTypeId } = params;
+  //
+  //     //  console.log("hloooo")
+  //     //  console.log("ppp",params)
+  //     //  console.log("ttt",eventTypeId)
+  //
+  //     try {
+  //       const { eventTypeId } = params;
+  //       const data = await seriesService.getSeriesData(eventTypeId);
+  //       if (!data || !Array.isArray(data) || data.length === 0) {
+  //         console.warn(
+  //           `[SeriesCron] Empty data received. Skipping cache for eventTypeId=${eventTypeId}`,
+  //         );
+  //         return {
+  //           success: true,
+  //           eventTypeId: eventTypeId,
+  //           data: data,
+  //           timestamp: new Date().toISOString(),
+  //           count: data.length,
+  //           message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
+  //         }; // return but don't cache
+  //       }
+  //
+  //
+  //       // await redis.set(cacheKey, JSON.stringify(data), { EX: 5*60 });
+  //
+  //       return {
+  //         success: true,
+  //         eventTypeId: eventTypeId,
+  //
+  //         data: data,
+  //         timestamp: new Date().toISOString(),
+  //         count: data.length,
+  //         message: `Series data for eventType ${eventTypeId} (cron updates every 5 seconds)`,
+  //       };
+  //     } catch (error: any) {
+  //       return {
+  //         success: false,
+  //         eventTypeId: params.eventTypeId,
+  //         message: error.message || "Failed to fetch series data",
+  //         data: [],
+  //       };
+  //     }
+  //   },
+  //   {
+  //     params: t.Object({
+  //       eventTypeId: t.String(),
+  //     }),
+  //   },
+  // )
 
   .get("/getMarketWithOdds/:eventId", async ({ params }) => {
     const { eventId } = params;
