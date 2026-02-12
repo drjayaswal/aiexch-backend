@@ -112,7 +112,7 @@ const app = new Elysia()
 console.log(`🚀 Server is running on http://localhost:${port}`);
 console.log(`📡 WebSocket support enabled`);
 
-startCronJobs()
+// startCronJobs()
 
 initSocket();
 MarketCronService.init();
