@@ -41,7 +41,6 @@ const allowAllOrigins =
 const app = new Elysia()
   // Register WebSocket routes first — before CORS/cookie middleware
   // so the upgrade handshake isn't intercepted
-  .use(websocketRoutes)
   .use(
     cors({
       origin: allowAllOrigins
@@ -92,6 +91,7 @@ const app = new Elysia()
   .use(casinoAggregatorRoutes)
   .use(casinoCallbackRoutes)
   .use(casinoGamesRoutes)
+  .use(websocketRoutes)
   .listen(port)
 
 // .all("/*", ({ request, set }) => {

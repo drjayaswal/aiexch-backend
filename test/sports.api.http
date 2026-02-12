@@ -85,6 +85,16 @@ WS ws://localhost:3001/ws/markets
 
 ### 
 
+WS ws://100.30.62.142:3001/ws/markets 
+
+
+### 
+
+WS wss://api.aiexch.com/ws/markets 
+
+
+### 
+
 GET https://api.aiexch.com/api/sports/getAllSeries/4 HTTP/1.1
 
 

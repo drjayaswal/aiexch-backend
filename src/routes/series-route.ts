@@ -111,7 +111,7 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
       const allSeriesData =
         await SportsService.getSeriesWithMatches(eventTypeId);
       if (allSeriesData.length > 0) {
-        await CacheService.set(cacheKey, allSeriesData, 5 * 60); // 5 minutes ttl
+        await CacheService.set(cacheKey, allSeriesData, 60 * 60); // 5 minutes ttl
       }
 
       // set.status = 200;
