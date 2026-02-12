@@ -50,7 +50,7 @@ GET https://api.aiexch.com/sports-proxy/sports/events/35247021 HTTP/1.1
 
 ### 
 
-GET https://api.aiexch.com/sports-proxy/sports/events/35254385 HTTP/1.1
+GET https://api.aiexch.com/sports-proxy/sports/events/35247021 HTTP/1.1
 
 
 ### 
@@ -60,14 +60,34 @@ GET https://api.aiexch.com/sports-proxy/sports/books/1.253646978 HTTP/1.1
 
 ### 
 
-WS ws://100.30.62.142:3002 
-
-
-### 
-
-WS ws://localhost:3001/sports/ws 
+WS ws://100.30.62.142:3003/socket.io/?EIO=4&transport=websocket 
 
 
 ### 
 
 WS ws://localhost:3003/socket.io/?EIO=4&transport=websocket 
+
+
+### 
+
+WS wss://api.aiexch.com/ws/socket.io/?EIO=4&transport=websocket 
+
+
+### 
+
+WS ws://localhost:3003/socket.io/?EIO=4&transport=websocket 
+
+
+### 
+
+WS ws://localhost:3001/ws/markets 
+
+
+### 
+
+GET https://api.aiexch.com/api/sports/getAllSeries/4 HTTP/1.1
+
+
+### 
+
+GET http://localhost:3001/api/sports/getAllSeries/4 HTTP/1.1

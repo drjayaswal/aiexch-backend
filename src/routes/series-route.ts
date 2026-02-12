@@ -85,7 +85,8 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
     }
   })
 
-  .get("/getAllSeries/:eventTypeId", async ({ params }) => {
+  .get("/getAllSeries/:eventTypeId", async ({ params, set }) => {
+    // console.log(`[API] Request received for /getAllSeries/${params.eventTypeId}`);
     const { eventTypeId } = params;
     const cacheKey = `series:withMatches:${eventTypeId}`;
     try {
@@ -93,6 +94,7 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
       const cachedData = await CacheService.get<any[]>(cacheKey);
       if (cachedData) {
         // console.log(`[API] Cache HIT for ${cacheKey}`);
+
         return {
           success: true,
           eventTypeId: eventTypeId,
@@ -111,6 +113,8 @@ export const seriesRoutes = new Elysia({ prefix: "/api/sports" })
       if (allSeriesData.length > 0) {
         await CacheService.set(cacheKey, allSeriesData, 5 * 60); // 5 minutes ttl
       }
+
+      // set.status = 200;
 
       return {
         success: true,

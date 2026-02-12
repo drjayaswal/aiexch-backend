@@ -7,17 +7,15 @@ import { profileRoutes } from "./routes/profile";
 import { adminRoutes } from "./routes/admin";
 import { publicRoutes } from "./routes/public";
 import { sportsRoutes } from "./routes/sports";
-import { sportsWebSocketRoutes } from "./routes/sports-websocket";
 import { bettingRoutes } from "./routes/betting";
 import { casinoAggregatorRoutes } from "./routes/casino/aggregator";
 import { casinoCallbackRoutes } from "./routes/casino/callback";
 import { casinoGamesRoutes } from "./routes/casino/games";
 import { startBetSettlementService } from "./services/bet-settlement";
 import { seriesRoutes } from "./routes/series-route";
-import http from "http";
 import "dotenv/config";
 import { initSocket } from "@services/socket-service";
-import { MarketCronService } from "@services/market-cron-service";
+import { websocketRoutes } from "@routes/websocket";
 import { startCronJobs } from "@db/seed";
 import { gamesRoutes } from "@routes/dashboard/games-routes";
 import { competitions } from "@db/schema";
@@ -41,6 +39,9 @@ const allowAllOrigins =
   process.env.NODE_ENV !== "production";
 
 const app = new Elysia()
+  // Register WebSocket routes first — before CORS/cookie middleware
+  // so the upgrade handshake isn't intercepted
+  .use(websocketRoutes)
   .use(
     cors({
       origin: allowAllOrigins
@@ -91,7 +92,6 @@ const app = new Elysia()
   .use(casinoAggregatorRoutes)
   .use(casinoCallbackRoutes)
   .use(casinoGamesRoutes)
-  .use(sportsWebSocketRoutes)
   .listen(port)
 
 // .all("/*", ({ request, set }) => {
@@ -115,6 +115,5 @@ console.log(`📡 WebSocket support enabled`);
 // startCronJobs()
 
 initSocket();
-MarketCronService.init();
 
-console.log(`🔌Socket server initialized`);
+console.log(`🔌 WebSocket server initialized`);

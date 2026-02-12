@@ -17,7 +17,6 @@ import matchesData from "../dummy/matches.json";
 import marketData from "../dummy/getMarkets.json";
 import IndividualMarketData from "../dummy/getMarketByMarketId.json";
 import odds from "../dummy/odds.json";
-import { getIO } from "./socket-service";
 import { and, eq } from "drizzle-orm";
 import { competitions } from "@db/schema";
 import { db } from "@db/index";
@@ -694,18 +693,13 @@ export const SportsService = {
         };
       });
 
-      const io = getIO()
-      if (io) {
-        // Emit to specific event room
-        io.to(`event:${eventId}`).emit("market-update", {
-          eventId,
-          markets: marketsWithOdds,
-          timestamp: Date.now(),
-        });
-        // console.log(`📡 Emitted market update for event: ${eventId}`);
-      } else {
-        console.log("⚠️ Socket.io not initialized, skipping emit");
-      }
+      // Broadcast market update via WebSocket
+      const { broadcastMarketUpdate } = await import("./socket-service");
+      broadcastMarketUpdate(eventId, {
+        eventId,
+        markets: marketsWithOdds,
+        timestamp: Date.now(),
+      });
 
 
       // STEP 5: Sort by sortPriority if available
